@@ -1,1 +1,231 @@
-https://hiyabel-al.github.io/asheflow/chatbot.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ashe Flow AI</title>
+<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'General Sans',sans-serif;background:radial-gradient(circle at 20% 20%,rgba(167,139,250,.08),transparent 40%),radial-gradient(circle at 80% 80%,rgba(167,139,250,.05),transparent 40%),#0a0a0f;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 30px rgba(167,139,250,.08)}50%{box-shadow:0 0 50px rgba(167,139,250,.18)}}
+.container{width:100%;max-width:450px;height:700px;background:rgba(21,21,29,.75);border:1px solid rgba(167,139,250,.12);border-radius:28px;box-shadow:0 0 50px rgba(167,139,250,.08);backdrop-filter:blur(15px);overflow:hidden;position:relative;display:flex;flex-direction:column;animation:glowPulse 4s ease infinite}
+.glow-bg{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:350px;height:350px;background:radial-gradient(circle,rgba(167,139,250,.08),transparent);pointer-events:none;z-index:0}
+.header{padding:20px 20px 14px;text-align:center;position:relative;z-index:1;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;animation:fadeIn .6s ease}
+.logo-wrap{margin:0 auto 12px;width:80px;height:80px;animation:float 5s ease infinite}
+.logo-wrap img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(167,139,250,.25);background:#0a0a0f}
+.brand{font-size:17px;font-weight:600;color:#fff;letter-spacing:.8px;margin-bottom:2px}
+.tagline{font-size:11px;color:#8a8a95;margin-bottom:8px}
+.status{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#8a8a95;margin-bottom:12px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease infinite}
+.features{display:flex;justify-content:center;gap:12px}
+.feature{font-size:10px;color:#8a8a95;display:flex;align-items:center;gap:3px}
+.feature-icon{color:#a78bfa}
+.divider{height:1px;background:rgba(255,255,255,.05);flex-shrink:0}
+.body{flex:1;overflow-y:auto;position:relative;z-index:1}
+.body::-webkit-scrollbar{width:3px}
+.body::-webkit-scrollbar-thumb{background:rgba(167,139,250,.3);border-radius:2px}
+.welcome-card{margin:14px;background:#15151d;border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:16px;animation:fadeIn .5s ease .2s both}
+.welcome-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px}
+.welcome-sub{font-size:12px;color:#8a8a95;margin-bottom:12px;line-height:1.6}
+.divider-line{color:#8a8a95;font-size:11px;margin-bottom:10px}
+.quick-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.quick-btn{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:9px 10px;color:#fff;font-size:11px;font-family:'General Sans',sans-serif;cursor:pointer;text-align:left;transition:all .3s ease;display:flex;align-items:center;gap:6px}
+.quick-btn:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.2);transform:translateY(-2px);box-shadow:0 0 15px rgba(167,139,250,.15)}
+.quick-btn.full{grid-column:1/-1}
+.messages{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.msg-wrap{display:flex;flex-direction:column;animation:fadeIn .3s ease}
+.msg-wrap.user{align-items:flex-end}
+.msg-wrap.bot{align-items:flex-start}
+.msg{max-width:82%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55;word-break:break-word}
+.msg-wrap.bot .msg{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);color:#fff;border-bottom-left-radius:4px}
+.msg-wrap.user .msg{background:linear-gradient(135deg,#a78bfa,#3b3b45);color:#fff;border-bottom-right-radius:4px}
+.msg-time{font-size:10px;color:#8a8a95;margin-top:3px;padding:0 4px}
+.msg-wrap.typing .msg{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);padding:12px 16px;border-bottom-left-radius:4px}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.7);animation:pulse 1.2s ease infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;padding:0 2px}
+.chip{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:20px;padding:5px 12px;font-size:11px;color:#a78bfa;cursor:pointer;font-family:'General Sans',sans-serif;transition:all .3s ease}
+.chip:hover{background:rgba(167,139,250,.18);transform:translateY(-1px)}
+.lead-form{background:#15151d;border:1px solid rgba(167,139,250,.15);border-radius:14px;padding:14px;margin-top:6px;max-width:90%;animation:fadeIn .3s ease}
+.lead-form p{font-size:12px;color:#8a8a95;margin-bottom:10px}
+.lead-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;font-family:'General Sans',sans-serif;outline:none;margin-bottom:6px;transition:all .3s ease}
+.lead-input:focus{border-color:rgba(167,139,250,.4)}
+.lead-input::placeholder{color:#8a8a95}
+.lead-submit{width:100%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;border-radius:8px;padding:9px;color:#fff;font-size:12px;font-weight:600;font-family:'General Sans',sans-serif;cursor:pointer;transition:all .3s ease;margin-top:2px}
+.lead-submit:hover{transform:translateY(-1px);box-shadow:0 0 15px rgba(167,139,250,.3)}
+.input-row{padding:10px 14px 14px;display:flex;gap:8px;align-items:center;border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;position:relative;z-index:1}
+.chat-input{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:10px 14px;color:#fff;font-size:13px;font-family:'General Sans',sans-serif;outline:none;transition:all .3s ease}
+.chat-input::placeholder{color:#8a8a95}
+.chat-input:focus{border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.04);transform:translateY(-2px)}
+.send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;flex-shrink:0}
+.send:hover{transform:scale(1.08);box-shadow:0 0 18px rgba(167,139,250,.5)}
+.send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.send svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.footer{text-align:center;padding:6px;font-size:10px;color:#8a8a95;border-top:1px solid rgba(255,255,255,.03);flex-shrink:0}
+.footer a{color:#8a8a95;text-decoration:none}
+.footer a:hover{color:#a78bfa}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="glow-bg"></div>
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="https://raw.githubusercontent.com/Hiyabel-al/asheflow/main/Main_Logo_Of_ashe_Flow.png" alt="Ashe Flow AI"/>
+    </div>
+    <div class="brand">ASHE FLOW AI</div>
+    <div class="tagline">Business Assistant</div>
+    <div class="status"><span class="status-dot"></span> AI Assistant Ready · Response &lt; 5 Seconds</div>
+    <div class="features">
+      <div class="feature"><span class="feature-icon">⚡</span> Instant Replies</div>
+      <div class="feature"><span class="feature-icon">🧠</span> AI Powered</div>
+      <div class="feature"><span class="feature-icon">📅</span> Booking Ready</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="body" id="body">
+    <div id="welcomeCard" class="welcome-card">
+      <div class="welcome-title">ASHE FLOW AI</div>
+      <div class="welcome-sub">Helping creators automate,<br>grow and scale.</div>
+      <div class="divider-line">━━━━━━━━━━━</div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="quickMsg('What are your pricing packages?')">💰 Pricing</button>
+        <button class="quick-btn" onclick="quickMsg('Tell me about video editing services')">🎬 Video Editing</button>
+        <button class="quick-btn" onclick="quickMsg('Tell me about social media management')">📱 Social Media</button>
+        <button class="quick-btn" onclick="quickMsg('Tell me about AI automation services')">🤖 AI Automation</button>
+        <button class="quick-btn full" onclick="showLeadForm()">📅 Book a Free Call</button>
+      </div>
+    </div>
+    <div id="messages" class="messages"></div>
+  </div>
+  <div class="input-row">
+    <input class="chat-input" id="inp" type="text" placeholder="Type a message..."/>
+    <button class="send" id="sendBtn" onclick="send()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+  <div class="footer">Powered by Ashe Flow AI &nbsp;·&nbsp; <a href="https://hiyabel-al.github.io/asheflow">Visit Website</a></div>
+</div>
+<script>
+// Smart AI — answers from knowledge base first, Make.com as backup
+const KNOWLEDGE = {
+  pricing: `We have 3 packages:\n\n💰 Starter — $800/mo\n✓ AI DM Chatbot\n✓ Content Scheduling\n✓ Basic Analytics\n✓ Inbox Management\n\n📈 Growth — $2,000/mo\n✓ Everything in Starter\n✓ Full CRM & Fan Tracking\n✓ Content Repurposing\n✓ Social Media Management\n✓ Weekly Analytics Reports\n\n👑 Elite — $4,000/mo\n✓ Everything in Growth\n✓ Pro Video Editing\n✓ Full Content Strategy\n✓ Priority Support 24/7\n\nBook a free call to find the right plan: https://calendly.com/asmeromhiyab6/30min`,
+  video: `We offer professional video editing services including:\n\n🎬 Content editing & cuts\n🖼️ Thumbnails & intros\n📱 Platform-optimized exports (TikTok, Reels, YouTube)\n♻️ Long video → short clips (automated)\n\nIncluded in Growth & Elite packages. Book a free call: https://calendly.com/asmeromhiyab6/30min`,
+  social: `Our Social Media Management includes:\n\n📅 Full monthly content calendar\n📤 Auto-posting to all platforms\n✍️ AI-written captions\n📊 Performance tracking\n\nIncluded in Growth & Elite packages starting at $2,000/mo. 🌊`,
+  automation: `Our AI automation services include:\n\n🤖 AI DM Chatbot — 24/7 fan conversations\n📥 Inbox management & sorting\n💰 Automated upsell sequences\n🔄 Content repurposing pipeline\n📊 CRM & fan tracking\n\nAvailable in all packages from $800/mo!`,
+  contact: `You can reach us at:\n\n📱 WhatsApp: +256740264760\n📧 Email: asheflowagency@gmail.com\n📸 Instagram: @asheflow.agency\n🌐 Website: hiyabel-al.github.io/asheflow\n\nOr book a free call: https://calendly.com/asmeromhiyab6/30min`,
+  book: `Book your FREE 30-min strategy call with Ashe here:\n\n📅 https://calendly.com/asmeromhiyab6/30min\n\nWe'll discuss your creator business and show you exactly how AI automation can grow your revenue. No pressure! 🌊`
+};
+
+function getSmartReply(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('pric') || m.includes('cost') || m.includes('package') || m.includes('plan') || m.includes('how much')) return KNOWLEDGE.pricing;
+  if (m.includes('video') || m.includes('edit')) return KNOWLEDGE.video;
+  if (m.includes('social') || m.includes('instagram') || m.includes('tiktok') || m.includes('post')) return KNOWLEDGE.social;
+  if (m.includes('automat') || m.includes('chatbot') || m.includes('dm') || m.includes('ai') || m.includes('bot')) return KNOWLEDGE.automation;
+  if (m.includes('contact') || m.includes('whatsapp') || m.includes('email') || m.includes('reach')) return KNOWLEDGE.contact;
+  if (m.includes('book') || m.includes('call') || m.includes('schedule') || m.includes('meet')) return KNOWLEDGE.book;
+  return null;
+}
+
+const WEBHOOK = 'https://hook.eu1.make.com/cjclmy9fvakg4ry1yqp8q4k9ccqw98n5';
+const msgs = document.getElementById('messages');
+const inp = document.getElementById('inp');
+const btn = document.getElementById('sendBtn');
+const welcome = document.getElementById('welcomeCard');
+const bodyEl = document.getElementById('body');
+
+function getTime() {
+  const n = new Date(); let h = n.getHours(), m = n.getMinutes(), a = 'AM';
+  if (h >= 12) { a = 'PM'; if (h > 12) h -= 12; } if (h === 0) h = 12;
+  return h + ':' + (m < 10 ? '0' + m : m) + ' ' + a;
+}
+
+function showMsgs() { welcome.style.display = 'none'; }
+
+function addMsg(text, type, chips) {
+  showMsgs();
+  const w = document.createElement('div');
+  w.className = 'msg-wrap ' + (type === 'typing' ? 'typing' : type === 'user' ? 'user' : 'bot');
+  if (type === 'typing') {
+    w.innerHTML = '<div class="msg"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  } else {
+    const d = document.createElement('div'); d.className = 'msg';
+    d.style.whiteSpace = 'pre-wrap'; d.textContent = text; w.appendChild(d);
+    const t = document.createElement('div'); t.className = 'msg-time'; t.textContent = getTime(); w.appendChild(t);
+    if (type === 'bot' && chips) {
+      const c = document.createElement('div'); c.className = 'chips';
+      ['Tell Me Pricing', 'Book a Call', 'View Services'].forEach(x => {
+        const b = document.createElement('button'); b.className = 'chip'; b.textContent = x;
+        b.onclick = () => quickMsg(x); c.appendChild(b);
+      });
+      w.appendChild(c);
+    }
+  }
+  msgs.appendChild(w); bodyEl.scrollTop = bodyEl.scrollHeight; return w;
+}
+
+function showLeadForm() {
+  showMsgs();
+  const w = document.createElement('div'); w.className = 'msg-wrap bot';
+  w.innerHTML = `<div class="lead-form">
+    <p>Book your free strategy call with Ashe 🌊</p>
+    <input class="lead-input" id="lN" placeholder="Your Name"/>
+    <input class="lead-input" id="lW" placeholder="WhatsApp Number"/>
+    <input class="lead-input" id="lB" placeholder="Your Platform (OnlyFans, Fansly...)"/>
+    <input class="lead-input" id="lBu" placeholder="Monthly Budget (e.g. $800)"/>
+    <button class="lead-submit" onclick="submitLead()">Book Free Call →</button>
+  </div>`;
+  msgs.appendChild(w); bodyEl.scrollTop = bodyEl.scrollHeight;
+}
+
+function submitLead() {
+  const n = document.getElementById('lN').value, wa = document.getElementById('lW').value;
+  if (!n || !wa) { addMsg('Please fill in your name and WhatsApp number.', 'bot', false); return; }
+  addMsg(`Thanks ${n}! 🎉 We'll WhatsApp you at ${wa} within 24hrs to confirm your free strategy call. Get ready to flow! 🌊`, 'bot', false);
+  window.open('https://calendly.com/asmeromhiyab6/30min', '_blank');
+}
+
+async function send() {
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = ''; btn.disabled = true;
+  addMsg(text, 'user', false);
+  const typing = addMsg('', 'typing', false);
+
+  // Try smart local reply first
+  const smart = getSmartReply(text);
+  if (smart) {
+    await new Promise(r => setTimeout(r, 800));
+    typing.remove();
+    addMsg(smart, 'bot', true);
+    btn.disabled = false; inp.focus(); return;
+  }
+
+  // Fall back to Make.com webhook
+  try {
+    const res = await fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+    const reply = await res.text();
+    typing.remove();
+    addMsg(reply && reply.length > 5 ? reply : `Great question! We help adult creators automate their entire business. Want to see how? Book a free call: https://calendly.com/asmeromhiyab6/30min 🌊`, 'bot', true);
+  } catch (e) {
+    typing.remove();
+    addMsg(`We help adult creators automate their business with AI! Ask me about pricing, services, or book a free call. 🌊`, 'bot', true);
+  }
+  btn.disabled = false; inp.focus();
+}
+
+function quickMsg(t) { inp.value = t; send(); }
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+</script>
+</body>
+</html>
