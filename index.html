@@ -1,231 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ashe Flow AI</title>
-<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'General Sans',sans-serif;background:radial-gradient(circle at 20% 20%,rgba(167,139,250,.08),transparent 40%),radial-gradient(circle at 80% 80%,rgba(167,139,250,.05),transparent 40%),#0a0a0f;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes pulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes glowPulse{0%,100%{box-shadow:0 0 30px rgba(167,139,250,.08)}50%{box-shadow:0 0 50px rgba(167,139,250,.18)}}
-.container{width:100%;max-width:450px;height:700px;background:rgba(21,21,29,.75);border:1px solid rgba(167,139,250,.12);border-radius:28px;box-shadow:0 0 50px rgba(167,139,250,.08);backdrop-filter:blur(15px);overflow:hidden;position:relative;display:flex;flex-direction:column;animation:glowPulse 4s ease infinite}
-.glow-bg{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:350px;height:350px;background:radial-gradient(circle,rgba(167,139,250,.08),transparent);pointer-events:none;z-index:0}
-.header{padding:20px 20px 14px;text-align:center;position:relative;z-index:1;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;animation:fadeIn .6s ease}
-.logo-wrap{margin:0 auto 12px;width:80px;height:80px;animation:float 5s ease infinite}
-.logo-wrap img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(167,139,250,.25);background:#0a0a0f}
-.brand{font-size:17px;font-weight:600;color:#fff;letter-spacing:.8px;margin-bottom:2px}
-.tagline{font-size:11px;color:#8a8a95;margin-bottom:8px}
-.status{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#8a8a95;margin-bottom:12px}
-.status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease infinite}
-.features{display:flex;justify-content:center;gap:12px}
-.feature{font-size:10px;color:#8a8a95;display:flex;align-items:center;gap:3px}
-.feature-icon{color:#a78bfa}
-.divider{height:1px;background:rgba(255,255,255,.05);flex-shrink:0}
-.body{flex:1;overflow-y:auto;position:relative;z-index:1}
-.body::-webkit-scrollbar{width:3px}
-.body::-webkit-scrollbar-thumb{background:rgba(167,139,250,.3);border-radius:2px}
-.welcome-card{margin:14px;background:#15151d;border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:16px;animation:fadeIn .5s ease .2s both}
-.welcome-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px}
-.welcome-sub{font-size:12px;color:#8a8a95;margin-bottom:12px;line-height:1.6}
-.divider-line{color:#8a8a95;font-size:11px;margin-bottom:10px}
-.quick-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.quick-btn{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:9px 10px;color:#fff;font-size:11px;font-family:'General Sans',sans-serif;cursor:pointer;text-align:left;transition:all .3s ease;display:flex;align-items:center;gap:6px}
-.quick-btn:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.2);transform:translateY(-2px);box-shadow:0 0 15px rgba(167,139,250,.15)}
-.quick-btn.full{grid-column:1/-1}
-.messages{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
-.msg-wrap{display:flex;flex-direction:column;animation:fadeIn .3s ease}
-.msg-wrap.user{align-items:flex-end}
-.msg-wrap.bot{align-items:flex-start}
-.msg{max-width:82%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55;word-break:break-word}
-.msg-wrap.bot .msg{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);color:#fff;border-bottom-left-radius:4px}
-.msg-wrap.user .msg{background:linear-gradient(135deg,#a78bfa,#3b3b45);color:#fff;border-bottom-right-radius:4px}
-.msg-time{font-size:10px;color:#8a8a95;margin-top:3px;padding:0 4px}
-.msg-wrap.typing .msg{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);padding:12px 16px;border-bottom-left-radius:4px}
-.dots{display:flex;gap:5px;align-items:center}
-.dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.7);animation:pulse 1.2s ease infinite}
-.dot:nth-child(2){animation-delay:.2s}
-.dot:nth-child(3){animation-delay:.4s}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;padding:0 2px}
-.chip{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:20px;padding:5px 12px;font-size:11px;color:#a78bfa;cursor:pointer;font-family:'General Sans',sans-serif;transition:all .3s ease}
-.chip:hover{background:rgba(167,139,250,.18);transform:translateY(-1px)}
-.lead-form{background:#15151d;border:1px solid rgba(167,139,250,.15);border-radius:14px;padding:14px;margin-top:6px;max-width:90%;animation:fadeIn .3s ease}
-.lead-form p{font-size:12px;color:#8a8a95;margin-bottom:10px}
-.lead-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;font-family:'General Sans',sans-serif;outline:none;margin-bottom:6px;transition:all .3s ease}
-.lead-input:focus{border-color:rgba(167,139,250,.4)}
-.lead-input::placeholder{color:#8a8a95}
-.lead-submit{width:100%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;border-radius:8px;padding:9px;color:#fff;font-size:12px;font-weight:600;font-family:'General Sans',sans-serif;cursor:pointer;transition:all .3s ease;margin-top:2px}
-.lead-submit:hover{transform:translateY(-1px);box-shadow:0 0 15px rgba(167,139,250,.3)}
-.input-row{padding:10px 14px 14px;display:flex;gap:8px;align-items:center;border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;position:relative;z-index:1}
-.chat-input{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:10px 14px;color:#fff;font-size:13px;font-family:'General Sans',sans-serif;outline:none;transition:all .3s ease}
-.chat-input::placeholder{color:#8a8a95}
-.chat-input:focus{border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.04);transform:translateY(-2px)}
-.send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;flex-shrink:0}
-.send:hover{transform:scale(1.08);box-shadow:0 0 18px rgba(167,139,250,.5)}
-.send:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.send svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.footer{text-align:center;padding:6px;font-size:10px;color:#8a8a95;border-top:1px solid rgba(255,255,255,.03);flex-shrink:0}
-.footer a{color:#8a8a95;text-decoration:none}
-.footer a:hover{color:#a78bfa}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ashe Flow — AI-Powered Creator Agency</title>
+  <meta name="description" content="AI-powered automation for adult creators. We handle your DMs, content, social media, and video editing — so you focus only on creating." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: #0a0a0f; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+    .fade-in-delay-4 { transition-delay: 0.4s; }
+    .fade-in-delay-5 { transition-delay: 0.5s; }
+    .fade-in-delay-6 { transition-delay: 0.6s; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; border-bottom: 0.5px solid rgba(255,255,255,0.08); position: sticky; top: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(10px); z-index: 100; }
+    .logo { font-size: 1.3rem; font-weight: 900; letter-spacing: 3px; color: #fff; text-decoration: none; }
+    .logo span { color: #a78bfa; }
+    .nav-links { display: flex; gap: 2.5rem; }
+    .nav-links a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: #a78bfa; }
+    .nav-cta { background: #a78bfa; color: #0a0a0f; padding: 0.65rem 1.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; transition: background 0.2s; }
+    .nav-cta:hover { background: #c4b5fd; }
+    .hero { padding: 7rem 4rem 5rem; max-width: 960px; }
+    .hero-tag { display: inline-block; background: rgba(167,139,250,0.12); color: #a78bfa; font-size: 0.72rem; letter-spacing: 2.5px; text-transform: uppercase; padding: 0.45rem 1.1rem; border-radius: 2px; margin-bottom: 2.2rem; border: 0.5px solid rgba(167,139,250,0.25); }
+    .hero h1 { font-size: 5rem; font-weight: 900; line-height: 1.02; letter-spacing: -2.5px; margin-bottom: 1.8rem; }
+    .hero h1 .accent { color: #a78bfa; }
+    .hero p { font-size: 1.15rem; color: rgba(255,255,255,0.5); max-width: 540px; line-height: 1.75; margin-bottom: 2.8rem; }
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary { background: #a78bfa; color: #0a0a0f; padding: 1rem 2.2rem; border-radius: 4px; font-size: 0.82rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.2s; }
+    .btn-primary:hover { background: #c4b5fd; }
+    .btn-secondary { background: transparent; color: #fff; padding: 1rem 2.2rem; border-radius: 4px; font-size: 0.82rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border: 0.5px solid rgba(255,255,255,0.2); transition: border-color 0.2s; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.5); }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.07); margin: 0 4rem; border-radius: 8px; overflow: hidden; }
+    .stat { background: #0d0d17; padding: 2.2rem; text-align: center; }
+    .stat-number { font-size: 2.8rem; font-weight: 900; color: #a78bfa; letter-spacing: -1px; }
+    .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.5rem; }
+    .section { padding: 6rem 4rem; }
+    .section-tag { font-size: 0.72rem; color: #a78bfa; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1rem; }
+    .section h2 { font-size: 2.8rem; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 1rem; line-height: 1.1; }
+    .section-desc { color: rgba(255,255,255,0.45); max-width: 480px; line-height: 1.75; margin-bottom: 3.5rem; font-size: 1rem; }
+    .ratings-section { padding: 5rem 4rem; background: #0d0d17; border-top: 0.5px solid rgba(255,255,255,0.07); border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+    .ratings-top { display: flex; align-items: center; gap: 3rem; margin-bottom: 3.5rem; flex-wrap: wrap; }
+    .overall-rating { text-align: center; }
+    .big-score { font-size: 5rem; font-weight: 900; color: #a78bfa; letter-spacing: -3px; line-height: 1; }
+    .stars { color: #a78bfa; font-size: 1.4rem; margin: 0.5rem 0; letter-spacing: 3px; }
+    .rating-label { font-size: 0.75rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1.5px; }
+    .rating-divider { width: 0.5px; height: 80px; background: rgba(255,255,255,0.1); }
+    .rating-stats { display: flex; gap: 3rem; flex-wrap: wrap; }
+    .rating-stat-item { text-align: center; }
+    .rating-stat-number { font-size: 2.2rem; font-weight: 900; color: #fff; letter-spacing: -1px; }
+    .rating-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.3rem; }
+    .rating-bars { display: flex; flex-direction: column; gap: 0.8rem; max-width: 400px; }
+    .rating-bar-row { display: flex; align-items: center; gap: 1rem; }
+    .bar-label { font-size: 0.78rem; color: rgba(255,255,255,0.4); width: 80px; text-align: right; white-space: nowrap; }
+    .bar-track { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .bar-fill { height: 100%; background: #a78bfa; border-radius: 2px; width: 0%; transition: width 1.2s ease; }
+    .bar-pct { font-size: 0.75rem; color: rgba(255,255,255,0.3); width: 30px; }
+    .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; margin-top: 3rem; }
+    .review-card { background: #0a0a0f; padding: 2rem; }
+    .review-stars { color: #a78bfa; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1rem; }
+    .review-text { font-size: 0.88rem; color: rgba(255,255,255,0.6); line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
+    .reviewer { display: flex; align-items: center; gap: 0.8rem; }
+    .reviewer-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(167,139,250,0.15); border: 0.5px solid rgba(167,139,250,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #a78bfa; }
+    .reviewer-info p { font-size: 0.82rem; font-weight: 700; }
+    .reviewer-info span { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; }
+    .service-card { background: #0d0d17; padding: 2.2rem; transition: background 0.2s; }
+    .service-card:hover { background: #13131f; }
+    .service-icon { width: 44px; height: 44px; background: rgba(167,139,250,0.12); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.4rem; font-size: 1.3rem; border: 0.5px solid rgba(167,139,250,0.2); }
+    .service-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.7rem; }
+    .service-card p { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.65; }
+    .packages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .package-card { background: #0d0d17; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 2.2rem; position: relative; transition: border-color 0.2s; }
+    .package-card:hover { border-color: rgba(255,255,255,0.15); }
+    .package-card.featured { border-color: #a78bfa; border-width: 1px; }
+    .featured-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: #a78bfa; color: #0a0a0f; font-size: 0.68rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.3rem 1.1rem; border-radius: 20px; white-space: nowrap; }
+    .package-tier { font-size: 0.7rem; color: #a78bfa; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.6rem; }
+    .package-price { font-size: 2.8rem; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 0.4rem; line-height: 1; }
+    .package-price span { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.35); }
+    .package-desc { font-size: 0.8rem; color: rgba(255,255,255,0.35); margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 0.5px solid rgba(255,255,255,0.07); line-height: 1.5; }
+    .package-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+    .package-features li { font-size: 0.83rem; color: rgba(255,255,255,0.65); display: flex; align-items: flex-start; gap: 0.65rem; line-height: 1.4; }
+    .check { color: #a78bfa; font-weight: 900; flex-shrink: 0; }
+    .pkg-btn { display: block; text-align: center; padding: 0.85rem; border-radius: 4px; font-size: 0.78rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; background: transparent; border: 0.5px solid rgba(255,255,255,0.18); color: #fff; transition: border-color 0.2s; }
+    .pkg-btn:hover { border-color: rgba(255,255,255,0.4); }
+    .pkg-btn.featured-btn { background: #a78bfa; color: #0a0a0f; border-color: #a78bfa; }
+    .pkg-btn.featured-btn:hover { background: #c4b5fd; }
+    .cta-section { margin: 0 4rem 6rem; background: #0d0d17; border: 0.5px solid rgba(167,139,250,0.18); border-radius: 10px; padding: 5rem 3rem; text-align: center; }
+    .cta-section h2 { font-size: 3rem; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 1rem; }
+    .cta-section p { color: rgba(255,255,255,0.45); margin-bottom: 2.5rem; font-size: 1rem; }
+    footer { padding: 2rem 4rem; border-top: 0.5px solid rgba(255,255,255,0.07); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    footer p { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+    .social-links { display: flex; gap: 2rem; }
+    .social-links a { font-size: 0.78rem; color: rgba(255,255,255,0.25); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
+    .social-links a:hover { color: #a78bfa; }
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 4rem 1.5rem 3rem; }
+      .hero h1 { font-size: 3rem; letter-spacing: -1.5px; }
+      .stats { margin: 0 1.5rem; grid-template-columns: 1fr; }
+      .section { padding: 4rem 1.5rem; }
+      .ratings-section { padding: 4rem 1.5rem; }
+      .ratings-top { flex-direction: column; gap: 2rem; }
+      .rating-divider { display: none; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .packages-grid { grid-template-columns: 1fr; }
+      .cta-section { margin: 0 1.5rem 4rem; padding: 3rem 1.5rem; }
+      .cta-section h2 { font-size: 2rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+    }
+
+    /* PAYMENT MODAL */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #0d0d17; border: 0.5px solid rgba(167,139,250,0.3); border-radius: 12px; padding: 2.5rem; max-width: 480px; width: 90%; position: relative; animation: modalIn 0.3s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-close { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.5rem; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: #fff; }
+    .modal-tag { font-size: 0.7rem; color: #a78bfa; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .modal-title { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 0.3rem; }
+    .modal-amount { font-size: 2.5rem; font-weight: 900; color: #a78bfa; letter-spacing: -1px; margin-bottom: 1.5rem; }
+    .modal-amount span { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.4); }
+    .modal-divider { height: 0.5px; background: rgba(255,255,255,0.08); margin: 1.5rem 0; }
+    .modal-label { font-size: 0.72rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem; }
+    .wallet-box { background: #0a0a0f; border: 0.5px solid rgba(167,139,250,0.2); border-radius: 6px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    .wallet-address { font-size: 0.78rem; color: #a78bfa; word-break: break-all; font-family: monospace; }
+    .copy-btn { background: rgba(167,139,250,0.15); border: 0.5px solid rgba(167,139,250,0.3); color: #a78bfa; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+    .copy-btn:hover { background: rgba(167,139,250,0.3); }
+    .copy-btn.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
+    .modal-warning { background: rgba(251,191,36,0.08); border: 0.5px solid rgba(251,191,36,0.2); border-radius: 6px; padding: 0.8rem 1rem; font-size: 0.78rem; color: rgba(251,191,36,0.8); margin-bottom: 1.5rem; line-height: 1.5; }
+    .modal-steps { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
+    .modal-step { display: flex; align-items: flex-start; gap: 0.8rem; font-size: 0.82rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+    .step-num { width: 20px; height: 20px; background: rgba(167,139,250,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; color: #a78bfa; flex-shrink: 0; margin-top: 1px; }
+    .modal-email { font-size: 0.78rem; color: rgba(255,255,255,0.4); text-align: center; }
+    .modal-email a { color: #a78bfa; text-decoration: none; }
+    .pkg-btn-wrap { display: flex; flex-direction: column; gap: 0.6rem; }
+    .pay-btn { display: block; text-align: center; padding: 0.75rem; border-radius: 4px; font-size: 0.78rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; background: rgba(167,139,250,0.12); border: 0.5px solid rgba(167,139,250,0.3); color: #a78bfa; cursor: pointer; transition: background 0.2s; }
+    .pay-btn:hover { background: rgba(167,139,250,0.25); }
+    .pay-btn.featured-pay { background: #a78bfa; color: #0a0a0f; border-color: #a78bfa; }
+    .pay-btn.featured-pay:hover { background: #c4b5fd; }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="glow-bg"></div>
-  <div class="header">
-    <div class="logo-wrap">
-      <img src="https://raw.githubusercontent.com/Hiyabel-al/asheflow/main/ashe%20flow%20logo%20png.png" alt="Ashe Flow AI"/>
+
+  <nav>
+    <a href="#" class="logo">ASHE<span>FLOW</span></a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#ratings">Reviews</a>
+      <a href="#packages">Packages</a>
+      <a href="#contact">Contact</a>
     </div>
-    <div class="brand">ASHE FLOW AI</div>
-    <div class="tagline">Business Assistant</div>
-    <div class="status"><span class="status-dot"></span> AI Assistant Ready · Response &lt; 5 Seconds</div>
-    <div class="features">
-      <div class="feature"><span class="feature-icon">⚡</span> Instant Replies</div>
-      <div class="feature"><span class="feature-icon">🧠</span> AI Powered</div>
-      <div class="feature"><span class="feature-icon">📅</span> Booking Ready</div>
+    <a href="https://calendly.com/asmeromhiyab6/30min" class="nav-cta" target="_blank">Book a Call</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-tag fade-in">AI-Powered Creator Agency</div>
+    <h1 class="fade-in fade-in-delay-1">We Run Your<br>Business. You<br><span class="accent">Just Flow.</span></h1>
+    <p class="fade-in fade-in-delay-2">Full-stack automation for adult creators. AI chatbots, content pipelines, video editing, social media — all handled. You focus only on creating.</p>
+    <div class="hero-buttons fade-in fade-in-delay-3">
+      <a href="#packages" class="btn-primary">Get Started &rarr;</a>
     </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat fade-in fade-in-delay-1"><div class="stat-number">24/7</div><div class="stat-label">AI Always On</div></div>
+    <div class="stat fade-in fade-in-delay-2"><div class="stat-number">80%</div><div class="stat-label">Time Saved</div></div>
+    <div class="stat fade-in fade-in-delay-3"><div class="stat-number">3x</div><div class="stat-label">Revenue Growth</div></div>
   </div>
-  <div class="divider"></div>
-  <div class="body" id="body">
-    <div id="welcomeCard" class="welcome-card">
-      <div class="welcome-title">ASHE FLOW AI</div>
-      <div class="welcome-sub">Helping creators automate,<br>grow and scale.</div>
-      <div class="divider-line">━━━━━━━━━━━</div>
-      <div class="quick-btns">
-        <button class="quick-btn" onclick="quickMsg('What are your pricing packages?')">💰 Pricing</button>
-        <button class="quick-btn" onclick="quickMsg('Tell me about video editing services')">🎬 Video Editing</button>
-        <button class="quick-btn" onclick="quickMsg('Tell me about social media management')">📱 Social Media</button>
-        <button class="quick-btn" onclick="quickMsg('Tell me about AI automation services')">🤖 AI Automation</button>
-        <button class="quick-btn full" onclick="showLeadForm()">📅 Book a Free Call</button>
+
+  <section class="ratings-section" id="ratings">
+    <div class="section-tag fade-in">Client Satisfaction</div>
+    <h2 class="fade-in fade-in-delay-1" style="font-size:2.8rem;font-weight:900;letter-spacing:-1.5px;margin-bottom:2.5rem;">Creators Love<br>Ashe Flow</h2>
+    <div class="ratings-top">
+      <div class="overall-rating fade-in fade-in-delay-1">
+        <div class="big-score">5.0</div>
+        <div class="stars">★★★★★</div>
+        <div class="rating-label">Overall Rating</div>
+      </div>
+      <div class="rating-divider fade-in"></div>
+      <div class="rating-stats">
+        <div class="rating-stat-item fade-in fade-in-delay-1"><div class="rating-stat-number">50+</div><div class="rating-stat-label">Creators Served</div></div>
+        <div class="rating-stat-item fade-in fade-in-delay-2"><div class="rating-stat-number">98%</div><div class="rating-stat-label">Satisfaction Rate</div></div>
+        <div class="rating-stat-item fade-in fade-in-delay-3"><div class="rating-stat-number">$2M+</div><div class="rating-stat-label">Revenue Generated</div></div>
+        <div class="rating-stat-item fade-in fade-in-delay-4"><div class="rating-stat-number">4hr</div><div class="rating-stat-label">Avg Time Saved/Day</div></div>
       </div>
     </div>
-    <div id="messages" class="messages"></div>
+    <div class="rating-bars fade-in fade-in-delay-2">
+      <div class="rating-bar-row"><span class="bar-label">5 stars</span><div class="bar-track"><div class="bar-fill" data-width="95"></div></div><span class="bar-pct">95%</span></div>
+      <div class="rating-bar-row"><span class="bar-label">4 stars</span><div class="bar-track"><div class="bar-fill" data-width="4"></div></div><span class="bar-pct">4%</span></div>
+      <div class="rating-bar-row"><span class="bar-label">3 stars</span><div class="bar-track"><div class="bar-fill" data-width="1"></div></div><span class="bar-pct">1%</span></div>
+      <div class="rating-bar-row"><span class="bar-label">2 stars</span><div class="bar-track"><div class="bar-fill" data-width="0"></div></div><span class="bar-pct">0%</span></div>
+      <div class="rating-bar-row"><span class="bar-label">1 star</span><div class="bar-track"><div class="bar-fill" data-width="0"></div></div><span class="bar-pct">0%</span></div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card fade-in fade-in-delay-1">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Ashe Flow completely changed how I run my business. The AI chatbot handles my DMs 24/7 and my revenue doubled in 2 months. I just focus on creating now."</p>
+        <div class="reviewer"><div class="reviewer-avatar">SK</div><div class="reviewer-info"><p>Sophie K.</p><span>OnlyFans Creator — 12k fans</span></div></div>
+      </div>
+      <div class="review-card fade-in fade-in-delay-2">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"I was spending 6 hours a day on DMs and content. Now everything runs automatically. Best investment I've ever made for my creator business."</p>
+        <div class="reviewer"><div class="reviewer-avatar">MR</div><div class="reviewer-info"><p>Maya R.</p><span>Fansly Creator — 8k fans</span></div></div>
+      </div>
+      <div class="review-card fade-in fade-in-delay-3">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"The video editing and social media management alone is worth every penny. My growth on TikTok and Instagram exploded after working with Ashe Flow."</p>
+        <div class="reviewer"><div class="reviewer-avatar">JT</div><div class="reviewer-info"><p>Jordan T.</p><span>Multi-platform Creator — 25k fans</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <div class="section-tag fade-in">What We Do</div>
+    <h2 class="fade-in fade-in-delay-1">Everything Your<br>Creator Business Needs</h2>
+    <p class="section-desc fade-in fade-in-delay-2">We handle every part of your business so you never have to think about operations again.</p>
+    <div class="services-grid">
+      <div class="service-card fade-in fade-in-delay-1"><div class="service-icon">🤖</div><h3>AI DM Chatbot</h3><p>24/7 automated fan conversations, upsells and inbox management that never sleeps.</p></div>
+      <div class="service-card fade-in fade-in-delay-2"><div class="service-icon">📱</div><h3>Social Media Management</h3><p>Full content calendar, scheduling and posting across all your platforms automatically.</p></div>
+      <div class="service-card fade-in fade-in-delay-3"><div class="service-icon">🎬</div><h3>Video Editing</h3><p>Pro editing, thumbnails and platform-optimized exports delivered fast.</p></div>
+      <div class="service-card fade-in fade-in-delay-4"><div class="service-icon">📊</div><h3>CRM & Analytics</h3><p>Fan tracking, revenue reports and weekly growth insights built for creators.</p></div>
+      <div class="service-card fade-in fade-in-delay-5"><div class="service-icon">♻️</div><h3>Content Repurposing</h3><p>Turn one long video into 10 short clips optimized for every platform automatically.</p></div>
+      <div class="service-card fade-in fade-in-delay-6"><div class="service-icon">📅</div><h3>Content Scheduling</h3><p>Automated posting pipelines that keep your audience engaged around the clock.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="packages" style="padding-top: 0;">
+    <div class="section-tag fade-in">Pricing</div>
+    <h2 class="fade-in fade-in-delay-1">Choose Your Plan</h2>
+    <p class="section-desc fade-in fade-in-delay-2">Simple, transparent pricing. No hidden fees. Cancel anytime.</p>
+    <div class="packages-grid">
+      <div class="package-card fade-in fade-in-delay-1">
+        <div class="package-tier">Starter</div>
+        <div class="package-price">$800<span>/mo</span></div>
+        <div class="package-desc">Perfect for growing creators earning $1k–3k/mo</div>
+        <ul class="package-features">
+          <li><span class="check">✓</span> AI DM Chatbot</li>
+          <li><span class="check">✓</span> Content Scheduling</li>
+          <li><span class="check">✓</span> Basic Analytics Dashboard</li>
+          <li><span class="check">✓</span> Inbox Management</li>
+        </ul>
+        <div class="pkg-btn-wrap"><button onclick="openPayment('Starter Plan', '800')" class="pay-btn">Pay with USDT</button><a href="https://calendly.com/asmeromhiyab6/30min" class="pkg-btn" target="_blank">Book a Call Instead</a></div>
+      </div>
+      <div class="package-card featured fade-in fade-in-delay-2">
+        <div class="featured-badge">Most Popular</div>
+        <div class="package-tier">Growth</div>
+        <div class="package-price">$2,000<span>/mo</span></div>
+        <div class="package-desc">For serious creators earning $3k–8k/mo</div>
+        <ul class="package-features">
+          <li><span class="check">✓</span> Everything in Starter</li>
+          <li><span class="check">✓</span> Full CRM & Fan Tracking</li>
+          <li><span class="check">✓</span> Content Repurposing Pipeline</li>
+          <li><span class="check">✓</span> Social Media Management</li>
+          <li><span class="check">✓</span> Weekly Analytics Reports</li>
+        </ul>
+        <div class="pkg-btn-wrap"><button onclick="openPayment('Growth Plan', '2000')" class="pay-btn featured-pay">Pay with USDT</button><a href="https://calendly.com/asmeromhiyab6/30min" class="pkg-btn" target="_blank">Book a Call Instead</a></div>
+      </div>
+      <div class="package-card fade-in fade-in-delay-3">
+        <div class="package-tier">Elite</div>
+        <div class="package-price">$4,000<span>/mo</span></div>
+        <div class="package-desc">Full service for top creators earning $8k+/mo</div>
+        <ul class="package-features">
+          <li><span class="check">✓</span> Everything in Growth</li>
+          <li><span class="check">✓</span> Pro Video Editing</li>
+          <li><span class="check">✓</span> Full Content Strategy</li>
+          <li><span class="check">✓</span> Priority Support 24/7</li>
+          <li><span class="check">✓</span> Monthly Growth Report</li>
+        </ul>
+        <div class="pkg-btn-wrap"><button onclick="openPayment('Elite Plan', '4000')" class="pay-btn">Pay with USDT</button><a href="https://calendly.com/asmeromhiyab6/30min" class="pkg-btn" target="_blank">Book a Call Instead</a></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-section fade-in" id="contact">
+    <h2>Ready to Flow?</h2>
+    <p>Let's build your automated creator business. Book a free strategy call with Ashe today.</p>
+    <a href="https://calendly.com/asmeromhiyab6/30min" class="btn-primary" target="_blank">Book a Free Call &rarr;</a>
   </div>
-  <div class="input-row">
-    <input class="chat-input" id="inp" type="text" placeholder="Type a message..."/>
-    <button class="send" id="sendBtn" onclick="send()">
-      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    </button>
+
+  <footer>
+    <p>© Ashe Flow 2026. All rights reserved.</p>
+    <div class="social-links">
+      <a href="https://wa.me/256740264760" target="_blank">WhatsApp</a>
+      <a href="https://www.instagram.com/asheflow.agency?igsh=MWQwd2JuNW56OHhyNw==" target="_blank">Instagram</a>
+      <a href="https://x.com/asheflowhq" target="_blank">X</a>
+      <a href="mailto:Asheflowagency@gmail.com">Gmail</a>
+    </div>
+  </footer>
+
+
+  <!-- PAYMENT MODAL -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-tag">Crypto Payment</div>
+      <div class="modal-title" id="modalPlan">Starter Plan</div>
+      <div class="modal-amount" id="modalAmount">$800 <span>USDT</span></div>
+      <div class="modal-label">Send USDT to this address</div>
+      <div class="wallet-box">
+        <div class="wallet-address">TBT744ewmquxJJZVbAzEadsydVingxdHKk</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyAddress()">Copy</button>
+      </div>
+      <div class="modal-warning">⚠️ Send on <strong>TRC20 network only.</strong> Sending on wrong network will result in permanent loss of funds.</div>
+      <div class="modal-steps">
+        <div class="modal-step"><div class="step-num">1</div>Copy the wallet address above</div>
+        <div class="modal-step"><div class="step-num">2</div>Send exact USDT amount on TRC20 network</div>
+        <div class="modal-step"><div class="step-num">3</div>Email your payment screenshot to us</div>
+        <div class="modal-step"><div class="step-num">4</div>We confirm and start your onboarding within 24hrs</div>
+      </div>
+      <div class="modal-email">After payment email: <a href="mailto:asheflowagency@gmail.com">asheflowagency@gmail.com</a></div>
+    </div>
   </div>
-  <div class="footer">Powered by Ashe Flow AI &nbsp;·&nbsp; <a href="https://hiyabel-al.github.io/asheflow">Visit Website</a></div>
-</div>
-<script>
-// Smart AI — answers from knowledge base first, Make.com as backup
-const KNOWLEDGE = {
-  pricing: `We have 3 packages:\n\n💰 Starter — $800/mo\n✓ AI DM Chatbot\n✓ Content Scheduling\n✓ Basic Analytics\n✓ Inbox Management\n\n📈 Growth — $2,000/mo\n✓ Everything in Starter\n✓ Full CRM & Fan Tracking\n✓ Content Repurposing\n✓ Social Media Management\n✓ Weekly Analytics Reports\n\n👑 Elite — $4,000/mo\n✓ Everything in Growth\n✓ Pro Video Editing\n✓ Full Content Strategy\n✓ Priority Support 24/7\n\nBook a free call to find the right plan: https://calendly.com/asmeromhiyab6/30min`,
-  video: `We offer professional video editing services including:\n\n🎬 Content editing & cuts\n🖼️ Thumbnails & intros\n📱 Platform-optimized exports (TikTok, Reels, YouTube)\n♻️ Long video → short clips (automated)\n\nIncluded in Growth & Elite packages. Book a free call: https://calendly.com/asmeromhiyab6/30min`,
-  social: `Our Social Media Management includes:\n\n📅 Full monthly content calendar\n📤 Auto-posting to all platforms\n✍️ AI-written captions\n📊 Performance tracking\n\nIncluded in Growth & Elite packages starting at $2,000/mo. 🌊`,
-  automation: `Our AI automation services include:\n\n🤖 AI DM Chatbot — 24/7 fan conversations\n📥 Inbox management & sorting\n💰 Automated upsell sequences\n🔄 Content repurposing pipeline\n📊 CRM & fan tracking\n\nAvailable in all packages from $800/mo!`,
-  contact: `You can reach us at:\n\n📱 WhatsApp: +256740264760\n📧 Email: asheflowagency@gmail.com\n📸 Instagram: @asheflow.agency\n🌐 Website: hiyabel-al.github.io/asheflow\n\nOr book a free call: https://calendly.com/asmeromhiyab6/30min`,
-  book: `Book your FREE 30-min strategy call with Ashe here:\n\n📅 https://calendly.com/asmeromhiyab6/30min\n\nWe'll discuss your creator business and show you exactly how AI automation can grow your revenue. No pressure! 🌊`
-};
 
-function getSmartReply(msg) {
-  const m = msg.toLowerCase();
-  if (m.includes('pric') || m.includes('cost') || m.includes('package') || m.includes('plan') || m.includes('how much')) return KNOWLEDGE.pricing;
-  if (m.includes('video') || m.includes('edit')) return KNOWLEDGE.video;
-  if (m.includes('social') || m.includes('instagram') || m.includes('tiktok') || m.includes('post')) return KNOWLEDGE.social;
-  if (m.includes('automat') || m.includes('chatbot') || m.includes('dm') || m.includes('ai') || m.includes('bot')) return KNOWLEDGE.automation;
-  if (m.includes('contact') || m.includes('whatsapp') || m.includes('email') || m.includes('reach')) return KNOWLEDGE.contact;
-  if (m.includes('book') || m.includes('call') || m.includes('schedule') || m.includes('meet')) return KNOWLEDGE.book;
-  return null;
-}
-
-const WEBHOOK = 'https://hook.eu1.make.com/cjclmy9fvakg4ry1yqp8q4k9ccqw98n5';
-const msgs = document.getElementById('messages');
-const inp = document.getElementById('inp');
-const btn = document.getElementById('sendBtn');
-const welcome = document.getElementById('welcomeCard');
-const bodyEl = document.getElementById('body');
-
-function getTime() {
-  const n = new Date(); let h = n.getHours(), m = n.getMinutes(), a = 'AM';
-  if (h >= 12) { a = 'PM'; if (h > 12) h -= 12; } if (h === 0) h = 12;
-  return h + ':' + (m < 10 ? '0' + m : m) + ' ' + a;
-}
-
-function showMsgs() { welcome.style.display = 'none'; }
-
-function addMsg(text, type, chips) {
-  showMsgs();
-  const w = document.createElement('div');
-  w.className = 'msg-wrap ' + (type === 'typing' ? 'typing' : type === 'user' ? 'user' : 'bot');
-  if (type === 'typing') {
-    w.innerHTML = '<div class="msg"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
-  } else {
-    const d = document.createElement('div'); d.className = 'msg';
-    d.style.whiteSpace = 'pre-wrap'; d.textContent = text; w.appendChild(d);
-    const t = document.createElement('div'); t.className = 'msg-time'; t.textContent = getTime(); w.appendChild(t);
-    if (type === 'bot' && chips) {
-      const c = document.createElement('div'); c.className = 'chips';
-      ['Tell Me Pricing', 'Book a Call', 'View Services'].forEach(x => {
-        const b = document.createElement('button'); b.className = 'chip'; b.textContent = x;
-        b.onclick = () => quickMsg(x); c.appendChild(b);
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
       });
-      w.appendChild(c);
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    const ratingSection = document.querySelector('.rating-bars');
+    if (ratingSection) barObserver.observe(ratingSection);
+
+    function openPayment(plan, amount) {
+      document.getElementById('modalPlan').textContent = plan;
+      document.getElementById('modalAmount').innerHTML = '$' + amount + ' <span>USDT</span>';
+      document.getElementById('paymentModal').classList.add('active');
+      document.getElementById('copyBtn').textContent = 'Copy';
+      document.getElementById('copyBtn').classList.remove('copied');
     }
-  }
-  msgs.appendChild(w); bodyEl.scrollTop = bodyEl.scrollHeight; return w;
-}
 
-function showLeadForm() {
-  showMsgs();
-  const w = document.createElement('div'); w.className = 'msg-wrap bot';
-  w.innerHTML = `<div class="lead-form">
-    <p>Book your free strategy call with Ashe 🌊</p>
-    <input class="lead-input" id="lN" placeholder="Your Name"/>
-    <input class="lead-input" id="lW" placeholder="WhatsApp Number"/>
-    <input class="lead-input" id="lB" placeholder="Your Platform (OnlyFans, Fansly...)"/>
-    <input class="lead-input" id="lBu" placeholder="Monthly Budget (e.g. $800)"/>
-    <button class="lead-submit" onclick="submitLead()">Book Free Call →</button>
-  </div>`;
-  msgs.appendChild(w); bodyEl.scrollTop = bodyEl.scrollHeight;
-}
+    function closeModal() {
+      document.getElementById('paymentModal').classList.remove('active');
+    }
 
-function submitLead() {
-  const n = document.getElementById('lN').value, wa = document.getElementById('lW').value;
-  if (!n || !wa) { addMsg('Please fill in your name and WhatsApp number.', 'bot', false); return; }
-  addMsg(`Thanks ${n}! 🎉 We'll WhatsApp you at ${wa} within 24hrs to confirm your free strategy call. Get ready to flow! 🌊`, 'bot', false);
-  window.open('https://calendly.com/asmeromhiyab6/30min', '_blank');
-}
-
-async function send() {
-  const text = inp.value.trim(); if (!text) return;
-  inp.value = ''; btn.disabled = true;
-  addMsg(text, 'user', false);
-  const typing = addMsg('', 'typing', false);
-
-  // Try smart local reply first
-  const smart = getSmartReply(text);
-  if (smart) {
-    await new Promise(r => setTimeout(r, 800));
-    typing.remove();
-    addMsg(smart, 'bot', true);
-    btn.disabled = false; inp.focus(); return;
-  }
-
-  // Fall back to Make.com webhook
-  try {
-    const res = await fetch(WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text })
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
     });
-    const reply = await res.text();
-    typing.remove();
-    addMsg(reply && reply.length > 5 ? reply : `Great question! We help adult creators automate their entire business. Want to see how? Book a free call: https://calendly.com/asmeromhiyab6/30min 🌊`, 'bot', true);
-  } catch (e) {
-    typing.remove();
-    addMsg(`We help adult creators automate their business with AI! Ask me about pricing, services, or book a free call. 🌊`, 'bot', true);
-  }
-  btn.disabled = false; inp.focus();
-}
 
-function quickMsg(t) { inp.value = t; send(); }
-inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
-</script>
+    function copyAddress() {
+      navigator.clipboard.writeText('TBT744ewmquxJJZVbAzEadsydVingxdHKk');
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+  </script>
+
+
 </body>
 </html>
