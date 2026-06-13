@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ashe Flow AI — Smart Sales Funnel</title>
+<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'General Sans',sans-serif;background:radial-gradient(circle at 20% 20%,rgba(167,139,250,.08),transparent 40%),radial-gradient(circle at 80% 80%,rgba(167,139,250,.05),transparent 40%),#0a0a0f;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 30px rgba(167,139,250,.08)}50%{box-shadow:0 0 50px rgba(167,139,250,.18)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes checkPop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+.container{width:100%;max-width:480px;background:rgba(21,21,29,.75);border:1px solid rgba(167,139,250,.12);border-radius:28px;box-shadow:0 0 50px rgba(167,139,250,.08);backdrop-filter:blur(15px);overflow:hidden;position:relative;display:flex;flex-direction:column;animation:glowPulse 4s ease infinite;min-height:700px;max-height:90vh}
+.glow-bg{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:350px;height:350px;background:radial-gradient(circle,rgba(167,139,250,.08),transparent);pointer-events:none;z-index:0}
+
+/* Header */
+.header{padding:20px 20px 14px;text-align:center;position:relative;z-index:1;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0}
+.logo-wrap{margin:0 auto 10px;width:72px;height:72px;animation:float 5s ease infinite}
+.logo-wrap img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(167,139,250,.25)}
+.brand{font-size:16px;font-weight:700;color:#fff;letter-spacing:.8px;margin-bottom:2px}
+.brand span{color:#a78bfa}
+.tagline{font-size:11px;color:#8a8a95;margin-bottom:8px}
+.status{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:#8a8a95;margin-bottom:10px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease infinite}
+.features{display:flex;justify-content:center;gap:12px}
+.feature{font-size:10px;color:#8a8a95;display:flex;align-items:center;gap:3px}
+.feature-icon{color:#a78bfa}
+
+/* Progress bar */
+.progress-wrap{padding:10px 20px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;position:relative;z-index:1}
+.progress-steps{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.step{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.step-dot{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);background:transparent;display:flex;align-items:center;justify-content:center;font-size:9px;color:#8a8a95;transition:all .3s;position:relative;z-index:1}
+.step-dot.active{border-color:#a78bfa;background:rgba(167,139,250,.15);color:#a78bfa}
+.step-dot.done{border-color:#22c55e;background:rgba(34,197,94,.15);color:#22c55e;animation:checkPop .3s ease}
+.step-label{font-size:9px;color:#8a8a95;text-align:center;white-space:nowrap}
+.step-label.active{color:#a78bfa}
+.step-line{flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 4px;margin-bottom:14px;transition:background .3s}
+.step-line.done{background:#22c55e}
+
+/* Body */
+.body{flex:1;overflow-y:auto;position:relative;z-index:1}
+.body::-webkit-scrollbar{width:3px}
+.body::-webkit-scrollbar-thumb{background:rgba(167,139,250,.3);border-radius:2px}
+
+/* Screens */
+.screen{display:none;padding:16px;animation:fadeIn .3s ease}
+.screen.active{display:block}
+
+/* Welcome */
+.welcome-card{background:#15151d;border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:16px;margin-bottom:12px}
+.welcome-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.welcome-sub{font-size:12px;color:#8a8a95;margin-bottom:14px;line-height:1.6}
+.divider-line{color:#8a8a95;font-size:11px;margin-bottom:12px}
+.quick-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.quick-btn{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:10px;color:#fff;font-size:11px;font-family:'General Sans',sans-serif;cursor:pointer;text-align:left;transition:all .3s ease;display:flex;align-items:center;gap:6px}
+.quick-btn:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.2);transform:translateY(-2px)}
+.quick-btn.full{grid-column:1/-1}
+
+/* Chat */
+.messages{display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
+.msg-wrap{display:flex;flex-direction:column;animation:fadeIn .3s ease}
+.msg-wrap.user{align-items:flex-end}
+.msg-wrap.bot{align-items:flex-start}
+.msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55;word-break:break-word}
+.msg-wrap.bot .msg{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#fff;border-bottom-left-radius:4px}
+.msg-wrap.user .msg{background:linear-gradient(135deg,#a78bfa,#3b3b45);color:#fff;border-bottom-right-radius:4px}
+.msg-time{font-size:10px;color:#8a8a95;margin-top:3px;padding:0 4px}
+.typing-msg .msg{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);padding:12px 16px;border-bottom-left-radius:4px}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.7);animation:pulse 1.2s ease infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+
+/* Options */
+.options{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.option-btn{background:rgba(255,255,255,.03);border:1px solid rgba(167,139,250,.15);border-radius:10px;padding:10px 14px;color:#fff;font-size:12px;font-family:'General Sans',sans-serif;cursor:pointer;text-align:left;transition:all .3s ease;display:flex;align-items:center;gap:8px}
+.option-btn:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.3);transform:translateX(4px)}
+
+/* Package cards */
+.packages{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.pkg-card{background:#15151d;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;cursor:pointer;transition:all .3s ease;position:relative}
+.pkg-card:hover,.pkg-card.selected{border-color:#a78bfa;background:rgba(167,139,250,.06)}
+.pkg-card.recommended{border-color:rgba(167,139,250,.4)}
+.pkg-badge{position:absolute;top:-10px;right:14px;background:#a78bfa;color:#0a0a0f;font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:20px;text-transform:uppercase}
+.pkg-tier{font-size:10px;color:#a78bfa;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.pkg-price{font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:4px}
+.pkg-price span{font-size:12px;font-weight:400;color:#8a8a95}
+.pkg-desc{font-size:11px;color:#8a8a95;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.pkg-features{display:flex;flex-direction:column;gap:5px}
+.pkg-feature{font-size:11px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:6px}
+.check{color:#a78bfa;font-weight:700}
+.pkg-select-btn{width:100%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:700;font-family:'General Sans',sans-serif;cursor:pointer;margin-top:12px;transition:all .3s}
+.pkg-select-btn:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(167,139,250,.3)}
+
+/* Payment screen */
+.payment-screen{background:#15151d;border:1px solid rgba(167,139,250,.15);border-radius:16px;padding:18px}
+.payment-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.payment-sub{font-size:12px;color:#8a8a95;margin-bottom:16px}
+.payment-amount{text-align:center;margin-bottom:20px;padding:16px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.15);border-radius:12px}
+.payment-amount-label{font-size:11px;color:#8a8a95;letter-spacing:1px;margin-bottom:4px}
+.payment-amount-value{font-size:32px;font-weight:900;color:#a78bfa;letter-spacing:-1px}
+.payment-amount-period{font-size:13px;color:#8a8a95}
+.payment-methods{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.pay-method{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;cursor:pointer;transition:all .3s}
+.pay-method:hover{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.05)}
+.pay-method-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pay-method-name{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.pay-method-badge{font-size:9px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#22c55e;padding:2px 8px;border-radius:10px}
+.pay-method-detail{font-size:11px;color:#8a8a95;line-height:1.5}
+.wallet-address{background:#0a0a0f;border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:10px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wallet-addr-text{font-size:10px;color:#a78bfa;font-family:monospace;word-break:break-all}
+.copy-btn{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);border-radius:6px;padding:4px 10px;color:#a78bfa;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'General Sans',sans-serif}
+.copy-btn.copied{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3);color:#22c55e}
+.pay-warning{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:10px;font-size:11px;color:rgba(251,191,36,.8);line-height:1.5;margin-bottom:14px}
+.confirm-btn{width:100%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:700;font-family:'General Sans',sans-serif;cursor:pointer;transition:all .3s}
+.confirm-btn:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(167,139,250,.4)}
+
+/* CRM Form */
+.form-card{background:#15151d;border:1px solid rgba(167,139,250,.12);border-radius:16px;padding:18px}
+.form-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.form-sub{font-size:12px;color:#8a8a95;margin-bottom:16px}
+.form-group{margin-bottom:12px}
+.form-label{font-size:11px;color:#8a8a95;margin-bottom:5px;display:block;letter-spacing:.5px}
+.form-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;font-family:'General Sans',sans-serif;outline:none;transition:all .3s}
+.form-input:focus{border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.04)}
+.form-input::placeholder{color:#8a8a95}
+.form-select{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;font-family:'General Sans',sans-serif;outline:none;cursor:pointer}
+.form-select option{background:#15151d;color:#fff}
+.form-submit{width:100%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:700;font-family:'General Sans',sans-serif;cursor:pointer;transition:all .3s;margin-top:8px}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(167,139,250,.4)}
+
+/* Success screen */
+.success-screen{text-align:center;padding:20px}
+.success-icon{font-size:60px;margin-bottom:16px;animation:checkPop .5s ease}
+.success-title{font-size:22px;font-weight:900;color:#fff;margin-bottom:8px}
+.success-sub{font-size:13px;color:#8a8a95;margin-bottom:24px;line-height:1.6}
+.success-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;text-align:left}
+.success-step{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px}
+.success-step-icon{font-size:20px;flex-shrink:0}
+.success-step-text{font-size:12px;color:#fff;font-weight:500}
+.success-step-sub{font-size:11px;color:#8a8a95;margin-top:2px}
+.success-done-btn{width:100%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:700;font-family:'General Sans',sans-serif;cursor:pointer}
+
+/* Input row */
+.input-row{padding:10px 14px 14px;display:flex;gap:8px;align-items:center;border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;position:relative;z-index:1}
+.chat-input{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:10px 14px;color:#fff;font-size:13px;font-family:'General Sans',sans-serif;outline:none;transition:all .3s}
+.chat-input::placeholder{color:#8a8a95}
+.chat-input:focus{border-color:rgba(167,139,250,.4);transform:translateY(-1px)}
+.send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c5cbf);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0}
+.send:hover{transform:scale(1.08);box-shadow:0 0 18px rgba(167,139,250,.5)}
+.send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.send svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+.footer{text-align:center;padding:6px;font-size:10px;color:#8a8a95;border-top:1px solid rgba(255,255,255,.03);flex-shrink:0}
+.footer a{color:#8a8a95;text-decoration:none}
+.footer a:hover{color:#a78bfa}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="glow-bg"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="https://raw.githubusercontent.com/Hiyabel-al/asheflow/main/Main%20Logo%20Of%20ashe_Flow.png" alt="Ashe Flow"/>
+    </div>
+    <div class="brand">ASHE<span>FLOW</span> AGENCY</div>
+    <div class="tagline">AI-Powered Growth Systems</div>
+    <div class="status"><span class="status-dot"></span> Smart AI Ready · Auto-Qualifies & Recommends</div>
+    <div class="features">
+      <div class="feature"><span class="feature-icon">🤖</span> AI Sales</div>
+      <div class="feature"><span class="feature-icon">💳</span> Auto Payment</div>
+      <div class="feature"><span class="feature-icon">📋</span> Auto Onboard</div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="step">
+        <div class="step-dot active" id="step1">1</div>
+        <div class="step-label active" id="step1l">Chat</div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step">
+        <div class="step-dot" id="step2">2</div>
+        <div class="step-label" id="step2l">Package</div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step">
+        <div class="step-dot" id="step3">3</div>
+        <div class="step-label" id="step3l">Payment</div>
+      </div>
+      <div class="step-line" id="line3"></div>
+      <div class="step">
+        <div class="step-dot" id="step4">4</div>
+        <div class="step-label" id="step4l">Details</div>
+      </div>
+      <div class="step-line" id="line4"></div>
+      <div class="step">
+        <div class="step-dot" id="step5">✓</div>
+        <div class="step-label" id="step5l">Done!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body" id="body">
+
+    <!-- SCREEN 1: Welcome + Chat -->
+    <div class="screen active" id="screen-chat">
+      <div class="messages" id="messages">
+        <div class="msg-wrap bot">
+          <div class="msg">Hey! 👋 I'm the Ashe Flow AI. I help adult creators automate their business and scale their income.
+
+Let me ask you a few quick questions to find the perfect package for you! 🌊</div>
+          <div class="msg-time" id="initTime"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: Package Recommendation -->
+    <div class="screen" id="screen-package">
+      <div class="messages" id="pkg-messages"></div>
+      <div class="packages" id="packages-list"></div>
+    </div>
+
+    <!-- SCREEN 3: Payment -->
+    <div class="screen" id="screen-payment">
+      <div class="payment-screen">
+        <div class="payment-title">Complete Your Order 💳</div>
+        <div class="payment-sub">Secure payment — choose your preferred method</div>
+        <div class="payment-amount">
+          <div class="payment-amount-label">TOTAL DUE TODAY</div>
+          <div class="payment-amount-value" id="pay-amount">$800</div>
+          <div class="payment-amount-period">per month · cancel anytime</div>
+        </div>
+        <div class="payment-methods">
+          <!-- USDT -->
+          <div class="pay-method">
+            <div class="pay-method-header">
+              <div class="pay-method-name">💎 USDT (Crypto) <span class="pay-method-badge">Instant</span></div>
+            </div>
+            <div class="pay-method-detail">Send exact amount via TRC20 network</div>
+            <div class="wallet-address">
+              <div class="wallet-addr-text">TBT744ewmquxJJZVbAzEadsydVingxdHKk</div>
+              <button class="copy-btn" onclick="copyWallet(this)">Copy</button>
+            </div>
+          </div>
+          <!-- PayPal -->
+          <div class="pay-method">
+            <div class="pay-method-header">
+              <div class="pay-method-name">🅿️ PayPal <span class="pay-method-badge">Accepted</span></div>
+            </div>
+            <div class="pay-method-detail">Send to: asheflowagency@gmail.com<br>Include your package name in the note</div>
+          </div>
+        </div>
+        <div class="pay-warning">⚠️ After payment, email your receipt to <strong>asheflowagency@gmail.com</strong> — your onboarding starts within 24hrs!</div>
+        <button class="confirm-btn" onclick="confirmPayment()">I've Sent Payment ✓</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: CRM + Onboarding Form -->
+    <div class="screen" id="screen-form">
+      <div class="form-card">
+        <div class="form-title">🎉 Payment Confirmed!</div>
+        <div class="form-sub">Fill in your details so we can set everything up for you</div>
+        <div class="form-group">
+          <label class="form-label">FULL NAME</label>
+          <input class="form-input" id="f-name" placeholder="Your name" type="text"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">EMAIL ADDRESS</label>
+          <input class="form-input" id="f-email" placeholder="your@email.com" type="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">WHATSAPP NUMBER</label>
+          <input class="form-input" id="f-whatsapp" placeholder="+1 234 567 8900" type="tel"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">YOUR PLATFORM</label>
+          <select class="form-select" id="f-platform">
+            <option value="">Select your platform</option>
+            <option value="onlyfans">OnlyFans</option>
+            <option value="fansly">Fansly</option>
+            <option value="both">Both OnlyFans & Fansly</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">YOUR PROFILE LINK</label>
+          <input class="form-input" id="f-profile" placeholder="onlyfans.com/yourname" type="text"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">MONTHLY EARNINGS (approximate)</label>
+          <select class="form-select" id="f-earnings">
+            <option value="">Select range</option>
+            <option value="under1k">Under $1,000/mo</option>
+            <option value="1k-3k">$1,000 - $3,000/mo</option>
+            <option value="3k-8k">$3,000 - $8,000/mo</option>
+            <option value="8k+">$8,000+/mo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">BIGGEST CHALLENGE RIGHT NOW</label>
+          <input class="form-input" id="f-challenge" placeholder="e.g. Too many DMs, no time for content..." type="text"/>
+        </div>
+        <button class="form-submit" onclick="submitForm()">Complete Onboarding 🚀</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: Success -->
+    <div class="screen" id="screen-success">
+      <div class="success-screen">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Welcome to<br>Ashe Flow! 🌊</div>
+        <div class="success-sub">You're officially onboarded. Here's what happens next:</div>
+        <div class="success-steps">
+          <div class="success-step">
+            <div class="success-step-icon">📧</div>
+            <div>
+              <div class="success-step-text">Welcome email sent</div>
+              <div class="success-step-sub">Check your inbox in the next 5 minutes</div>
+            </div>
+          </div>
+          <div class="success-step">
+            <div class="success-step-icon">📱</div>
+            <div>
+              <div class="success-step-text">WhatsApp message incoming</div>
+              <div class="success-step-sub">We'll reach out within 24hrs to get started</div>
+            </div>
+          </div>
+          <div class="success-step">
+            <div class="success-step-icon">📅</div>
+            <div>
+              <div class="success-step-text">Strategy call booked</div>
+              <div class="success-step-sub">Click below to pick your call time</div>
+            </div>
+          </div>
+          <div class="success-step">
+            <div class="success-step-icon">🤖</div>
+            <div>
+              <div class="success-step-text">AI setup begins</div>
+              <div class="success-step-sub">Your chatbot goes live within 48hrs</div>
+            </div>
+          </div>
+        </div>
+        <button class="success-done-btn" onclick="window.open('https://calendly.com/asmeromhiyab6/30min')">📅 Book Your Strategy Call →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Input -->
+  <div class="input-row" id="inputRow">
+    <input class="chat-input" id="inp" type="text" placeholder="Type your answer..."/>
+    <button class="send" id="sendBtn" onclick="send()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+  <div class="footer">Powered by Ashe Flow AI &nbsp;·&nbsp; <a href="https://hiyabel-al.github.io/asheflow">Visit Website</a></div>
+</div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+const state = {
+  step: 'intro',
+  answers: {},
+  recommendedPkg: null,
+  selectedPkg: null,
+  clientData: {}
+};
+
+const PACKAGES = {
+  starter: {
+    id: 'starter', tier: 'Starter', price: '$800', period: '/mo',
+    desc: 'Perfect for creators earning $1k–3k/mo',
+    features: ['AI DM Chatbot 24/7','Content Scheduling','Basic Analytics Dashboard','Inbox Management'],
+    recommended: false
+  },
+  growth: {
+    id: 'growth', tier: 'Growth', price: '$2,000', period: '/mo',
+    desc: 'For serious creators earning $3k–8k/mo',
+    features: ['Everything in Starter','Full CRM & Fan Tracking','Content Repurposing Pipeline','Social Media Management','Weekly Analytics Reports'],
+    recommended: true
+  },
+  elite: {
+    id: 'elite', tier: 'Elite', price: '$4,000', period: '/mo',
+    desc: 'Full service for top creators earning $8k+/mo',
+    features: ['Everything in Growth','Pro Video Editing','Full Content Strategy','Priority Support 24/7','Monthly Growth Report'],
+    recommended: false
+  }
+};
+
+const QUESTIONS = [
+  {key:'platform', text:"Which platform are you on? 📱", opts:["OnlyFans","Fansly","Both","Other"]},
+  {key:'fans', text:"How many fans/subscribers do you have? 👥", opts:["Under 500","500 - 2,000","2,000 - 10,000","10,000+"]},
+  {key:'earnings', text:"What's your monthly earnings roughly? 💰", opts:["Under $1,000","$1,000 - $3,000","$3,000 - $8,000","$8,000+"]},
+  {key:'challenge', text:"What's your biggest challenge right now? 😩", opts:["Too many DMs to handle","Not enough time for content","Low fan engagement","Need to grow faster"]}
+];
+
+let qIndex = 0;
+
+// ============================================
+// INIT
+// ============================================
+document.getElementById('initTime').textContent = getTime();
+setTimeout(() => askQuestion(), 1200);
+
+// ============================================
+// HELPERS
+// ============================================
+function getTime(){
+  const n=new Date();let h=n.getHours(),m=n.getMinutes(),a='AM';
+  if(h>=12){a='PM';if(h>12)h-=12;}if(h===0)h=12;
+  return h+':'+(m<10?'0'+m:m)+' '+a;
+}
+
+function scrollBottom(){
+  const b = document.getElementById('body');
+  setTimeout(()=>b.scrollTop=b.scrollHeight, 100);
+}
+
+function addBotMsg(text, container='messages', showTime=true){
+  const msgs = document.getElementById(container);
+  const w = document.createElement('div');
+  w.className = 'msg-wrap bot';
+  w.innerHTML = `<div class="msg" style="white-space:pre-wrap">${text}</div>${showTime?`<div class="msg-time">${getTime()}</div>`:''}`;
+  msgs.appendChild(w);
+  scrollBottom();
+  return w;
+}
+
+function addUserMsg(text){
+  const msgs = document.getElementById('messages');
+  const w = document.createElement('div');
+  w.className = 'msg-wrap user';
+  w.innerHTML = `<div class="msg">${text}</div><div class="msg-time">${getTime()}</div>`;
+  msgs.appendChild(w);
+  scrollBottom();
+}
+
+function addTyping(container='messages'){
+  const msgs = document.getElementById(container);
+  const w = document.createElement('div');
+  w.className = 'msg-wrap bot typing-msg';
+  w.id = 'typing';
+  w.innerHTML = `<div class="msg"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  msgs.appendChild(w);
+  scrollBottom();
+  return w;
+}
+
+function removeTyping(){
+  const t = document.getElementById('typing');
+  if(t) t.remove();
+}
+
+function addOptions(opts, onSelect){
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'options';
+  div.id = 'current-options';
+  opts.forEach(o => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = o;
+    btn.onclick = () => { div.remove(); onSelect(o); };
+    div.appendChild(btn);
+  });
+  msgs.appendChild(div);
+  scrollBottom();
+}
+
+function updateProgress(stepNum){
+  for(let i=1;i<=5;i++){
+    const dot = document.getElementById(`step${i}`);
+    const label = document.getElementById(`step${i}l`);
+    if(i < stepNum){ dot.className='step-dot done'; dot.textContent='✓'; label.className='step-label'; }
+    else if(i === stepNum){ dot.className='step-dot active'; label.className='step-label active'; }
+    else{ dot.className='step-dot'; label.className='step-label'; }
+    if(i < 5){
+      const line = document.getElementById(`line${i}`);
+      line.className = i < stepNum ? 'step-line done' : 'step-line';
+    }
+  }
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  scrollBottom();
+}
+
+function copyWallet(btn){
+  navigator.clipboard.writeText('TBT744ewmquxJJZVbAzEadsydVingxdHKk');
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+// ============================================
+// QUALIFICATION FLOW
+// ============================================
+function askQuestion(){
+  if(qIndex >= QUESTIONS.length){ recommendPackage(); return; }
+  const q = QUESTIONS[qIndex];
+  const typing = addTyping();
+  setTimeout(()=>{
+    typing.remove();
+    addBotMsg(q.text);
+    addOptions(q.opts, (answer)=>{
+      state.answers[q.key] = answer;
+      addUserMsg(answer);
+      qIndex++;
+      setTimeout(()=> askQuestion(), 600);
+    });
+  }, 800);
+}
+
+// ============================================
+// PACKAGE RECOMMENDATION LOGIC
+// ============================================
+function recommendPackage(){
+  const typing = addTyping();
+  setTimeout(()=>{
+    typing.remove();
+    // Smart recommendation based on answers
+    let pkg = 'starter';
+    const earnings = state.answers.earnings || '';
+    const fans = state.answers.fans || '';
+    if(earnings.includes('$8,000') || fans.includes('10,000')) pkg = 'elite';
+    else if(earnings.includes('$3,000') || fans.includes('2,000')) pkg = 'growth';
+    else pkg = 'starter';
+    state.recommendedPkg = pkg;
+
+    addBotMsg(`Perfect! Based on your answers, I've found the best package for you! 🎯\n\nHere's my recommendation 👇`);
+    setTimeout(()=>{
+      updateProgress(2);
+      showScreen('screen-package');
+      document.getElementById('inputRow').style.display = 'none';
+      buildPackages(pkg);
+    }, 800);
+  }, 1200);
+}
+
+function buildPackages(recommended){
+  const pkgList = document.getElementById('packages-list');
+  const pkgMsgs = document.getElementById('pkg-messages');
+
+  // Bot message
+  const w = document.createElement('div');
+  w.className = 'msg-wrap bot';
+  w.innerHTML = `<div class="msg">Based on your profile, the <strong style="color:#a78bfa">${PACKAGES[recommended].tier}</strong> package is perfect for you! But feel free to choose any plan. 🌊</div><div class="msg-time">${getTime()}</div>`;
+  pkgMsgs.appendChild(w);
+
+  // Show recommended first, then others
+  const order = [recommended, ...Object.keys(PACKAGES).filter(k=>k!==recommended)];
+  order.forEach(key => {
+    const pkg = PACKAGES[key];
+    const isRec = key === recommended;
+    const card = document.createElement('div');
+    card.className = `pkg-card${isRec?' recommended selected':''}`;
+    card.innerHTML = `
+      ${isRec?'<div class="pkg-badge">✨ Recommended for you</div>':''}
+      <div class="pkg-tier">${pkg.tier}</div>
+      <div class="pkg-price">${pkg.price}<span>${pkg.period}</span></div>
+      <div class="pkg-desc">${pkg.desc}</div>
+      <div class="pkg-features">
+        ${pkg.features.map(f=>`<div class="pkg-feature"><span class="check">✓</span>${f}</div>`).join('')}
+      </div>
+      <button class="pkg-select-btn" onclick="selectPackage('${key}')">
+        ${isRec ? 'Get Started with '+pkg.tier+' →' : 'Choose '+pkg.tier}
+      </button>
+    `;
+    pkgList.appendChild(card);
+  });
+  scrollBottom();
+}
+
+function selectPackage(key){
+  state.selectedPkg = key;
+  const pkg = PACKAGES[key];
+  document.getElementById('pay-amount').textContent = pkg.price;
+  updateProgress(3);
+  showScreen('screen-payment');
+  scrollBottom();
+}
+
+// ============================================
+// PAYMENT
+// ============================================
+function confirmPayment(){
+  updateProgress(4);
+  showScreen('screen-form');
+  scrollBottom();
+}
+
+// ============================================
+// ONBOARDING FORM
+// ============================================
+function submitForm(){
+  const name = document.getElementById('f-name').value;
+  const email = document.getElementById('f-email').value;
+  const whatsapp = document.getElementById('f-whatsapp').value;
+  const platform = document.getElementById('f-platform').value;
+
+  if(!name || !email || !whatsapp || !platform){
+    alert('Please fill in all required fields!');
+    return;
+  }
+
+  // Save to state
+  state.clientData = { name, email, whatsapp, platform,
+    profile: document.getElementById('f-profile').value,
+    earnings: document.getElementById('f-earnings').value,
+    challenge: document.getElementById('f-challenge').value,
+    package: state.selectedPkg,
+    timestamp: new Date().toISOString()
+  };
+
+  // Send to Make.com webhook (CRM automation)
+  fetch('https://hook.eu1.make.com/cjclmy9fvakg4ry1yqp8q4k9ccqw98n5', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      type: 'NEW_CLIENT',
+      ...state.clientData
+    })
+  }).catch(()=>{});
+
+  // Show success
+  updateProgress(5);
+  showScreen('screen-success');
+  document.getElementById('inputRow').style.display = 'none';
+  scrollBottom();
+}
+
+// ============================================
+// MANUAL CHAT (fallback)
+// ============================================
+const KNOWLEDGE = {
+  pricing: `We have 3 packages:\n\n💰 Starter — $800/mo\n✓ AI DM Chatbot, Scheduling, Analytics\n\n📈 Growth — $2,000/mo\n✓ Everything + CRM, Social Media, Reports\n\n👑 Elite — $4,000/mo\n✓ Everything + Video Editing, Strategy`,
+  video: `We offer pro video editing, thumbnails, short clips and platform-optimized exports. Included in Growth & Elite packages! 🎬`,
+  social: `Full social media management — content calendar, scheduling, posting across all platforms. In Growth & Elite packages! 📱`,
+  contact: `WhatsApp: +256740264760\nEmail: asheflowagency@gmail.com\nInstagram: @asheflow.agency 🌊`,
+};
+
+function getLocalReply(msg){
+  const m = msg.toLowerCase();
+  if(m.includes('pric')||m.includes('cost')||m.includes('package')) return KNOWLEDGE.pricing;
+  if(m.includes('video')||m.includes('edit')) return KNOWLEDGE.video;
+  if(m.includes('social')||m.includes('instagram')) return KNOWLEDGE.social;
+  if(m.includes('contact')||m.includes('whatsapp')||m.includes('email')) return KNOWLEDGE.contact;
+  return null;
+}
+
+async function send(){
+  const inp = document.getElementById('inp');
+  const btn = document.getElementById('sendBtn');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  btn.disabled = true;
+  addUserMsg(text);
+
+  const local = getLocalReply(text);
+  if(local){
+    setTimeout(()=>{ addBotMsg(local); btn.disabled=false; }, 800);
+    return;
+  }
+
+  const typing = addTyping();
+  try{
+    const res = await fetch('https://hook.eu1.make.com/cjclmy9fvakg4ry1yqp8q4k9ccqw98n5',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text})
+    });
+    const reply = await res.text();
+    removeTyping();
+    addBotMsg(reply&&reply.length>5?reply:'Let me help you find the right package! 🌊');
+  }catch(e){
+    removeTyping();
+    addBotMsg('Ask me about pricing, services or book a free call! 🌊');
+  }
+  btn.disabled = false;
+}
+
+document.getElementById('inp').addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
+</script>
+</body>
+</html>
