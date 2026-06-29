@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hiyabel-al.github.io/asheflow/sitemap.xml
+
+# Ashe Flow Agency - AI Automation for Content Creators
+# https://hiyabel-al.github.io/asheflow
