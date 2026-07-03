@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"/c/Users/ASHE/Downloads/ASHEFLOW_ANALYSIS\")",
+      "Read(//c/Users/ASHE/Downloads/ASHEFLOW_ANALYSIS/**)",
+      "Bash(unzip -o \"/c/Users/ASHE/Downloads/ASHE FLOW AI.zip\" -d .)",
+      "Bash(xargs ls -la)",
+      "Read(//c/Users/ASHE/Downloads/**)",
+      "Bash(unzip -l \"ASHE FLOW AI.zip\")",
+      "Bash(mkdir -p _extracted/files_newfolder)",
+      "Bash(unzip -o \"New folder/files.zip\" -d \"_extracted/files_newfolder\")",
+      "PowerShell(node --version)",
+      "PowerShell(npx --version)",
+      "PowerShell(python --version)",
+      "PowerShell(py --version)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8843/vip-fans.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8843/fans.html)",
+      "Bash(powershell -NoProfile -Command 'try { \\(Invoke-WebRequest -Uri '\\\\''http://localhost:8843/saved-replies.html'\\\\'' -UseBasicParsing -TimeoutSec 5\\).StatusCode } catch { $_.Exception.Message }')",
+      "Bash(powershell -NoProfile -Command \"\\(Invoke-WebRequest -Uri 'http://localhost:8843/saved-replies.html' -UseBasicParsing\\).Content.Length; \\(Invoke-WebRequest -Uri 'http://localhost:8843/prompt-library.html' -UseBasicParsing\\).StatusCode; \\(Invoke-WebRequest -Uri 'http://localhost:8843/scheduled-messages.html' -UseBasicParsing\\).StatusCode; \\(Invoke-WebRequest -Uri 'http://localhost:8843/followups.html' -UseBasicParsing\\).StatusCode\")",
+      "PowerShell(cd \"C:\\\\Users\\\\ASHE\\\\Downloads\\\\New folder \\(4\\)\\\\asheflow-platform\"; \\(Get-Command node -ErrorAction SilentlyContinue\\) -ne $null; \\(Get-Command npx -ErrorAction SilentlyContinue\\) -ne $null)",
+      "Bash(node -e ' *)",
+      "mcp__claude-in-chrome__tabs_create_mcp",
+      "mcp__claude-in-chrome__navigate",
+      "Bash(python -m http.server 8899)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8899/hook-generator.html)"
+    ]
+  }
+}
