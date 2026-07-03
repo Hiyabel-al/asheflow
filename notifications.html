@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notifications — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Email Notifications</div>
+            <div class="toggle-row">
+              <div><p>Weekly report</p><span>A summary of your revenue, fans, and automation performance</span></div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><p>New message alerts</p><span>Get emailed when a fan sends you a new message</span></div>
+              <label class="switch"><input type="checkbox" /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><p>High spender alerts</p><span>Get notified when a fan crosses into the high spender tier</span></div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row" style="border-bottom:none;">
+              <div><p>Automation failure alerts</p><span>Get emailed if an automation fails to send</span></div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider-toggle"></span></label>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Push Notifications</div>
+            <div class="toggle-row">
+              <div><p>New message alerts</p><span>Push notification for every new fan message</span></div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><p>VIP fan activity</p><span>Get pushed when a VIP fan interacts with your content</span></div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row" style="border-bottom:none;">
+              <div><p>Revenue milestones</p><span>Celebrate when you hit a new revenue milestone</span></div>
+              <label class="switch"><input type="checkbox" /><span class="slider-toggle"></span></label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-sm" id="saveNotificationsBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('notifications.html');
+
+  document.getElementById('saveNotificationsBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'success', title:'Notification preferences saved' });
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

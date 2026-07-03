@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hook Generator — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Content Studio</h1><p>Generate captions, hooks, and find trends in seconds.</p></div>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🪝 Hook Generator</div>
+          <p class="text-dim" style="font-size:.85rem;margin-bottom:1rem;">Describe your video or post topic and AsheFlow will write scroll-stopping opening lines.</p>
+          <textarea class="studio-input" id="studioInput" placeholder="Describe your video/post topic — e.g. 'morning routine reveal'"></textarea>
+          <div class="tone-row" data-chip-group id="ideaChips">
+            <span class="chip" data-idea="morning routine reveal">☀️ Morning routine</span>
+            <span class="chip" data-idea="get ready with me, night out edition">💄 GRWM</span>
+            <span class="chip" data-idea="storytime — how I got started">📖 Storytime</span>
+            <span class="chip" data-idea="reacting to fan comments">💬 Fan reactions</span>
+          </div>
+          <button class="btn btn-primary" onclick="generateContent()" style="margin-top:1rem;">✨ Generate</button>
+          <div id="studioResults" style="margin-top:1.3rem;"></div>
+        </div>
+
+        <div class="flex-col gap-2">
+          <div class="card">
+            <div class="card-title">Recent Generations</div>
+            <div id="studioHistory"><p class="text-faint" style="font-size:.82rem;">Your generated hooks will show up here.</p></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Idea Generator</div>
+            <p class="text-dim" style="font-size:.85rem;margin-bottom:1rem;">Stuck on how to open your next video? Get a fresh hook idea.</p>
+            <button class="btn btn-ghost btn-block" onclick="randomIdea()">🎲 Give Me An Idea</button>
+            <div id="ideaResult" style="margin-top:1rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'studio', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('studio', 'hook-generator.html');
+
+  const D = window.ASHEFLOW_DATA;
+  const history = [];
+
+  document.querySelectorAll('#ideaChips .chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{ document.getElementById('studioInput').value = chip.dataset.idea; });
+  });
+
+  function renderHistory(){
+    const box = document.getElementById('studioHistory');
+    if(!history.length){ box.innerHTML = `<p class="text-faint" style="font-size:.82rem;">Your generated hooks will show up here.</p>`; return; }
+    box.innerHTML = history.slice(0,6).map(h=>`<div class="result-card"><span>${h}</span><button class="copy-btn" onclick="AsheUtils.copyText(${JSON.stringify(h)}, this)">Copy</button></div>`).join('');
+  }
+
+  function generateContent(){
+    const input = document.getElementById('studioInput').value.trim();
+    if(!input){ AsheToast.show({type:'warning', title:'Describe your video/post topic first'}); return; }
+    const resultsBox = document.getElementById('studioResults');
+    resultsBox.innerHTML = `<div class="skel skel-line"></div><div class="skel skel-line w70"></div><div class="skel skel-line short"></div>`;
+    setTimeout(()=>{
+      const results = D.studioExamples.hook;
+      resultsBox.innerHTML = results.map(r=>`
+        <div class="result-card"><span>${r}</span>
+          <div class="flex gap-1">
+            <button class="copy-btn" onclick="AsheUtils.copyText(${JSON.stringify(r)}, this)">Copy</button>
+            <button class="copy-btn" onclick="saveToHistory(${JSON.stringify(r)})">⭐ Save</button>
+          </div>
+        </div>`).join('');
+    }, 650);
+  }
+  function saveToHistory(text){ history.unshift(text); renderHistory(); AsheToast.show({type:'success', title:'Saved to history'}); }
+
+  function randomIdea(){
+    const ideas = ["Open with a bold claim fans will want to fact-check — 'I've never told anyone this before.'", "Start mid-action, like the camera caught you by surprise.", "Ask a question your fans are already thinking about you.", "Tease the ending in the first 2 seconds to earn the watch-through."];
+    document.getElementById('ideaResult').innerHTML = `<div class="result-card"><span>${ideas[Math.floor(Math.random()*ideas.length)]}</span></div>`;
+  }
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Follow-ups — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Follow-ups</h1><p>Automatically re-engage fans who go quiet.</p></div>
+        <a class="btn btn-primary" href="workflow-builder.html">+ New Automation</a>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div id="followupList"></div>
+
+      <div class="card" style="margin-top:1.6rem;max-width:560px;">
+        <div class="card-title">Follow-up Rules</div>
+        <div class="field">
+          <label>Wait time before following up</label>
+          <select id="followupWait">
+            <option value="12h">Wait 12 hours after last message before following up</option>
+            <option value="24h" selected>Wait 24 hours after last message before following up</option>
+            <option value="48h">Wait 48 hours after last message before following up</option>
+            <option value="72h">Wait 72 hours after last message before following up</option>
+          </select>
+          <div class="field-hint">Applies to all active Follow-up automations below.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="saveFollowupRuleBtn">Save Rule</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'automation', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('automation', 'followups.html');
+
+  const D = window.ASHEFLOW_DATA;
+  const followups = D.automations.filter(a=>a.category==='Follow-up');
+
+  function renderFollowups(){
+    const list = document.getElementById('followupList');
+    if(!followups.length){
+      list.innerHTML = `<div class="state-block"><div class="state-icon">⚡</div><h3>No follow-up automations yet</h3><p>Create one to automatically re-engage fans who go quiet.</p></div>`;
+      return;
+    }
+    list.innerHTML = followups.map(a=>`
+      <div class="card flow-card">
+        <div class="flow-info">
+          <div class="flex items-center gap-1"><h3>${a.name}</h3><span class="mini-tag">${a.category}</span></div>
+          <p>${a.trigger}</p>
+          <div class="flow-stats"><span>Sent: <b>${a.sent.toLocaleString()}</b></span><span>Reply rate: <b>${a.replyRate}%</b></span></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a class="btn btn-ghost btn-sm" href="workflow-builder.html?id=${a.id}">Edit</a>
+          <label class="switch"><input type="checkbox" ${a.active?'checked':''} data-id="${a.id}" /><span class="slider-toggle"></span></label>
+        </div>
+      </div>
+    `).join('');
+    document.querySelectorAll('#followupList input[type="checkbox"]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        const a = D.automations.find(x=>x.id===cb.dataset.id);
+        a.active = cb.checked;
+        AsheToast.show({type: cb.checked ? 'success' : 'info', title: a.name + (cb.checked ? ' turned on' : ' paused')});
+      });
+    });
+  }
+  renderFollowups();
+
+  document.getElementById('saveFollowupRuleBtn').addEventListener('click', ()=>{
+    const select = document.getElementById('followupWait');
+    const label = select.options[select.selectedIndex].text;
+    AsheToast.show({type:'success', title:'Follow-up rule saved', body:label});
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

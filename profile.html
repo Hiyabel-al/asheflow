@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Profile — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Creator Profile</div>
+            <div class="flex items-center gap-2" style="margin-bottom:1.4rem;">
+              <div class="avatar avatar-lg" id="profileAvatar">YA</div>
+              <div>
+                <button class="btn btn-ghost btn-sm" id="changePhotoBtn">Change Photo</button>
+                <div class="field-hint" style="margin-top:.5rem;">PNG or JPG, up to 5MB.</div>
+              </div>
+            </div>
+            <div class="form-row"><label>Display name</label><input id="profileName" value="Ashe" /></div>
+            <div class="form-row"><label>Email</label><input id="profileEmail" type="email" value="yakobmulu810@gmail.com" /></div>
+            <div class="form-row" style="max-width:520px;"><label>Bio</label><textarea id="profileBio" rows="4" style="resize:vertical;">Content creator sharing behind-the-scenes moments and exclusive drops with my favorite people. New content weekly ✨</textarea></div>
+          </div>
+
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Social Links</div>
+            <div class="form-row"><label>Instagram handle</label><input id="profileInstagram" placeholder="@yourhandle" value="@ashe.creates" /></div>
+            <div class="form-row"><label>Twitter / X handle</label><input id="profileTwitter" placeholder="@yourhandle" value="@ashe_online" /></div>
+          </div>
+
+          <button class="btn btn-primary btn-sm" id="saveProfileBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('profile.html');
+
+  document.getElementById('changePhotoBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'info', title:'Photo upload coming soon' });
+  });
+
+  document.getElementById('saveProfileBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'success', title:'Profile updated' });
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

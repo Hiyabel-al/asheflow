@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Settings — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Workspace</div>
+            <div class="form-row"><label>Workspace name</label><input id="workspaceName" value="AsheFlow Workspace" /></div>
+            <div class="form-row"><label>Timezone</label>
+              <select><option>Eastern Time (US)</option><option>Pacific Time (US)</option><option>UTC</option><option>Central European Time</option></select>
+            </div>
+            <div class="form-row"><label>Language</label>
+              <select><option>English (US)</option><option>Español</option><option>Français</option><option>Deutsch</option></select>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="AsheToast.show({type:'success', title:'Workspace settings saved'})">Save Changes</button>
+          </div>
+
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Appearance</div>
+            <div class="toggle-row"><div><p>Theme</p><span>AsheFlow is designed for dark mode</span></div>
+              <select style="width:auto;"><option>Dark (Recommended)</option><option>Light — Coming Soon</option></select>
+            </div>
+            <div class="toggle-row" style="border-bottom:none;"><div><p>Reduce motion</p><span>Minimize animations across the app</span></div><label class="switch"><input type="checkbox" /><span class="slider-toggle"></span></label></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">API Keys <span class="link" onclick="AsheToast.show({type:'success', title:'New API key generated'})">+ Generate Key</span></div>
+            <table>
+              <thead><tr><th>Name</th><th>Key</th><th>Created</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Production</td><td style="font-family:monospace;color:var(--text-faint);">ashe_live_••••••••wZ2k</td><td>Jun 12, 2026</td><td><button class="copy-btn" onclick="AsheToast.show({type:'success', title:'Revoked'})">Revoke</button></td></tr>
+                <tr><td>Zapier Integration</td><td style="font-family:monospace;color:var(--text-faint);">ashe_live_••••••••9pQ1</td><td>Jun 28, 2026</td><td><button class="copy-btn" onclick="AsheToast.show({type:'success', title:'Revoked'})">Revoke</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('settings.html');
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

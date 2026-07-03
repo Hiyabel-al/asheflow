@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Billing — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Current Plan</div>
+            <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem;">
+              <div>
+                <div class="flex items-center gap-1"><span class="metric-value">Pro Plan</span><span class="tag vip">Pro ⭐</span></div>
+                <p style="font-size:.85rem;color:var(--text-dim);margin-top:.4rem;">$79/mo · Renews Aug 3, 2026</p>
+              </div>
+            </div>
+            <div class="flex gap-1" style="flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" id="upgradePlanBtn">Upgrade Plan</button>
+              <button class="btn btn-danger btn-sm" id="cancelSubBtn">Cancel Subscription</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Payment Method</div>
+            <div class="toggle-row" style="border-bottom:none;">
+              <div><p>Visa •••• 4242</p><span>Expires 09/28</span></div>
+              <button class="btn btn-ghost btn-sm" id="updatePaymentBtn">Update Payment Method</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Billing History</div>
+            <table>
+              <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+              <tbody id="billingHistoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="cancelModalBackdrop">
+  <div class="modal">
+    <h3>Cancel your subscription?</h3>
+    <p>You'll lose access to AI replies, automations, and analytics at the end of your current billing period on Aug 3, 2026.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="keepSubBtn">Keep Subscription</button>
+      <button class="btn btn-danger btn-sm" id="confirmCancelBtn">Cancel Subscription</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('billing.html');
+
+  const invoices = [
+    {date:'Jul 3, 2026', desc:'Pro Plan — Monthly', amount:'$79.00', status:'paid'},
+    {date:'Jun 3, 2026', desc:'Pro Plan — Monthly', amount:'$79.00', status:'paid'},
+    {date:'May 3, 2026', desc:'Pro Plan — Monthly', amount:'$79.00', status:'paid'},
+    {date:'Apr 3, 2026', desc:'Pro Plan — Monthly', amount:'$79.00', status:'paid'},
+    {date:'Mar 3, 2026', desc:'Pro Plan — Monthly', amount:'$79.00', status:'paid'},
+  ];
+
+  document.getElementById('billingHistoryBody').innerHTML = invoices.map(inv => `
+    <tr>
+      <td>${inv.date}</td>
+      <td>${inv.desc}</td>
+      <td>${inv.amount}</td>
+      <td><span class="tag live">Paid</span></td>
+      <td><span class="link" data-download>Download</span></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('billingHistoryBody').addEventListener('click', (e)=>{
+    if(e.target.closest('[data-download]')){
+      AsheToast.show({ type:'success', title:'Invoice downloaded' });
+    }
+  });
+
+  document.getElementById('upgradePlanBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'info', title:'Plan upgrade coming soon' });
+  });
+
+  document.getElementById('updatePaymentBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'success', title:'Payment method update coming soon' });
+  });
+
+  const cancelModal = document.getElementById('cancelModalBackdrop');
+  document.getElementById('cancelSubBtn').addEventListener('click', ()=>{
+    cancelModal.classList.add('open');
+  });
+  document.getElementById('keepSubBtn').addEventListener('click', ()=>{
+    cancelModal.classList.remove('open');
+  });
+  cancelModal.addEventListener('click', (e)=>{
+    if(e.target === cancelModal) cancelModal.classList.remove('open');
+  });
+  document.getElementById('confirmCancelBtn').addEventListener('click', ()=>{
+    cancelModal.classList.remove('open');
+    AsheToast.show({ type:'info', title:'Subscription cancellation requested', body:'You\'ll keep Pro access until Aug 3, 2026.' });
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

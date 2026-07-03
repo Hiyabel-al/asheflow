@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Verify Your Email — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/auth.css" />
+</head>
+<body class="auth-body">
+
+<div class="glow-field"><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<div class="auth-side">
+  <a href="index.html" class="logo"><img src="assets/img/logo-mark.png" alt="AsheFlow" />ASHE<span>FLOW</span></a>
+  <h1>One quick step before you're in.</h1>
+  <p class="lede">We use email verification to keep every creator workspace secure — it takes about ten seconds.</p>
+  <div class="auth-quote">
+    <p>"Setup took less than ten minutes and the AI already sounded like me by day two."</p>
+    <div class="who">
+      <div class="avatar avatar-sm">PS</div>
+      <div><b>Priya S.</b><span>Agency Owner</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="auth-form-wrap">
+  <div class="auth-card">
+    <a href="index.html" class="auth-card-mobile-logo"><img src="assets/img/logo-mark.png" alt="" />ASHE<span>FLOW</span></a>
+    <div class="icon-badge">✉️</div>
+    <div class="auth-eyebrow">Verify email</div>
+    <h2>Check your inbox</h2>
+    <p class="sub">We sent a 6-digit code to <b id="emailTarget">your email</b>. Enter it below to verify your account.</p>
+
+    <form id="verifyForm" novalidate>
+      <div class="otp-row" id="otpRow">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" aria-label="Digit 1" />
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" aria-label="Digit 2" />
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" aria-label="Digit 3" />
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" aria-label="Digit 4" />
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" aria-label="Digit 5" />
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" aria-label="Digit 6" />
+      </div>
+      <div class="field-error show" id="otpError" style="margin-bottom:1rem;display:none;">That code doesn't look right — try again.</div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="verifySubmit">
+        <span class="btn-label">Verify Email →</span>
+      </button>
+    </form>
+
+    <p class="auth-footer-note">Didn't get a code? <a href="#" class="auth-link" id="resendLink">Resend code</a></p>
+    <p class="auth-footer-note"><a href="signup.html" class="auth-link">← Use a different email</a></p>
+  </div>
+</div>
+
+<script src="assets/js/toast.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get('email');
+  const name = params.get('name') || '';
+  if(email) document.getElementById('emailTarget').textContent = email;
+
+  // OTP auto-advance
+  const digits = [...document.querySelectorAll('.otp-digit')];
+  digits.forEach((d,i)=>{
+    d.addEventListener('input', ()=>{
+      d.value = d.value.replace(/[^0-9]/g,'').slice(0,1);
+      if(d.value && digits[i+1]) digits[i+1].focus();
+    });
+    d.addEventListener('keydown', (e)=>{
+      if(e.key === 'Backspace' && !d.value && digits[i-1]) digits[i-1].focus();
+    });
+  });
+  digits[0].focus();
+
+  document.getElementById('verifyForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const code = digits.map(d=>d.value).join('');
+    const errEl = document.getElementById('otpError');
+    if(code.length < 6){
+      errEl.style.display = 'block';
+      digits.forEach(d=>d.style.borderColor = 'var(--pink)');
+      return;
+    }
+    errEl.style.display = 'none';
+    digits.forEach(d=>d.style.borderColor = 'var(--violet)');
+    const btn = document.getElementById('verifySubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Verifying...';
+    setTimeout(()=>{
+      AsheToast.show({type:'success', title:'Email verified!'});
+      const qs = new URLSearchParams(); if(name) qs.set('name', name);
+      setTimeout(()=>{ window.location.href = 'onboarding.html' + (qs.toString() ? '?'+qs.toString() : ''); }, 500);
+    }, 700);
+  });
+
+  let cooldown = 0;
+  document.getElementById('resendLink').addEventListener('click', (e)=>{
+    e.preventDefault();
+    if(cooldown > 0) return;
+    AsheToast.show({type:'success', title:'Code resent', body:'Check your inbox again.'});
+    cooldown = 30;
+    const link = e.target;
+    const tick = ()=>{
+      if(cooldown <= 0){ link.textContent = 'Resend code'; return; }
+      link.textContent = `Resend code (${cooldown}s)`;
+      cooldown--;
+      setTimeout(tick, 1000);
+    };
+    tick();
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="auth"></script>
+</body>
+</html>

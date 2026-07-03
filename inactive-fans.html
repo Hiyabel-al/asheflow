@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inactive Fans — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="breadcrumb" style="margin-bottom:1rem;"><a href="fans.html">Fan CRM</a> <span>/</span> <span class="current">Inactive Fans</span></div>
+      <div class="view-head">
+        <div><h1>Inactive Fans</h1><p>Fans who've gone quiet — a well-timed message could win them back.</p></div>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="grid-3" style="margin-bottom:1.2rem;">
+        <div class="card"><div class="metric-label">Inactive Fans</div><div class="metric-value" style="color:var(--pink);" id="statCount">0</div></div>
+        <div class="card"><div class="metric-label">Avg Days Since Active</div><div class="metric-value" id="statDays">0</div></div>
+        <div class="card"><div class="metric-label">Revenue At Risk</div><div class="metric-value" style="color:var(--cyan);" id="statRisk">$0</div></div>
+      </div>
+
+      <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem;">
+        <div class="filter-chips" style="margin-bottom:0;"><span class="filter-chip active">Inactive Fans</span></div>
+        <input class="search" style="width:240px;" placeholder="Search inactive fans..." id="fanSearch" />
+      </div>
+
+      <div class="card" style="padding:1rem 1.4rem;overflow-x:auto;">
+        <table style="min-width:1040px;">
+          <thead><tr><th>Fan</th><th>Username</th><th>Platform</th><th>Segment</th><th>Tags</th><th>Spend</th><th>Engagement</th><th>Last Active</th><th>Notes</th><th>Action</th></tr></thead>
+          <tbody id="fanTableBody"></tbody>
+        </table>
+        <div id="fanEmptyState"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fan detail slide-over -->
+<div class="slideover-backdrop" id="slideBackdrop" onclick="closeFanPanel()"></div>
+<div class="slideover" id="fanPanel">
+  <button class="slideover-close" onclick="closeFanPanel()">&times;</button>
+  <div style="clear:both;"></div>
+  <div class="avatar avatar-lg" id="fanPanelAvatar" style="margin-bottom:1rem;">MJ</div>
+  <h2 style="font-size:1.2rem;margin-bottom:.2rem;" id="fanPanelName">Mara J.</h2>
+  <div id="fanPanelTag" class="tag inactive" style="margin-bottom:.6rem;">Inactive</div>
+  <div class="flex gap-1" style="margin-bottom:1.4rem;">
+    <a class="btn btn-primary btn-sm" id="fanPanelMessage" href="conversation.html">💬 Send Re-engagement Message</a>
+    <a class="btn btn-ghost btn-sm" id="fanPanelProfile" href="fan-profile.html">Full Profile →</a>
+  </div>
+  <div class="form-row"><label>Notes</label><textarea rows="4" id="fanPanelNotes" placeholder="Add a note about this fan..."></textarea></div>
+  <button class="btn btn-primary btn-sm" onclick="AsheToast.show({type:'success', title:'Notes saved'})">Save Notes</button>
+  <div style="font-size:.78rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin:1.4rem 0 .6rem;">Timeline</div>
+  <div id="fanPanelTimeline"></div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'crm', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('crm', 'inactive-fans.html');
+
+  const D = window.ASHEFLOW_DATA;
+  const inactiveFans = D.fans.filter(f=>f.segment==='inactive');
+
+  document.getElementById('statCount').textContent = inactiveFans.length;
+  document.getElementById('statDays').textContent = (inactiveFans.length ? Math.round(inactiveFans.reduce((s,f)=>s+f.activeDays,0)/inactiveFans.length) : 0) + ' days';
+  document.getElementById('statRisk').textContent = '$' + inactiveFans.reduce((s,f)=>s+f.spent,0).toLocaleString();
+
+  function tagLabel(t){ return t==='vip'?'VIP':t==='high'?'High Spender':t==='inactive'?'Inactive':'Regular'; }
+  function engColor(v){ return v>=80?'var(--cyan)':v>=40?'var(--violet)':'var(--pink)'; }
+
+  let searchTerm = '';
+  function renderFans(){
+    const rows = inactiveFans.filter(f=>{
+      return !searchTerm || f.name.toLowerCase().includes(searchTerm) || f.username.toLowerCase().includes(searchTerm);
+    });
+    const body = document.getElementById('fanTableBody');
+    const empty = document.getElementById('fanEmptyState');
+    if(!rows.length){
+      body.innerHTML = '';
+      empty.innerHTML = `<div class="state-block"><div class="state-icon">🔍</div><h3>No inactive fans found</h3><p>Try a different search term.</p></div>`;
+      return;
+    }
+    empty.innerHTML = '';
+    body.innerHTML = rows.map(f=>`
+      <tr class="fan-row">
+        <td style="display:flex;align-items:center;gap:.6rem;white-space:nowrap;cursor:pointer;" onclick="openFanPanel('${f.id}')"><div class="avatar avatar-sm">${f.init}</div>${f.name}</td>
+        <td style="color:var(--text-faint);cursor:pointer;" onclick="openFanPanel('${f.id}')">${f.username}</td>
+        <td style="cursor:pointer;" onclick="openFanPanel('${f.id}')">${f.platform}</td>
+        <td style="cursor:pointer;" onclick="openFanPanel('${f.id}')"><span class="tag ${f.segment}">${tagLabel(f.segment)}</span></td>
+        <td style="cursor:pointer;" onclick="openFanPanel('${f.id}')">${f.tags.map(t=>`<span class="mini-tag">${t}</span>`).join('')}</td>
+        <td style="cursor:pointer;" onclick="openFanPanel('${f.id}')">${f.spentLabel}</td>
+        <td style="cursor:pointer;" onclick="openFanPanel('${f.id}')"><div style="display:flex;align-items:center;gap:.5rem;"><div class="eng-bar"><div class="eng-fill" style="width:${f.engagement}%;background:${engColor(f.engagement)};"></div></div><span style="font-size:.78rem;color:var(--text-faint);">${f.engagement}</span></div></td>
+        <td style="cursor:pointer;" onclick="openFanPanel('${f.id}')">${f.active}</td>
+        <td style="color:var(--text-faint);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;" onclick="openFanPanel('${f.id}')">${f.notes ? '📝 '+f.notes : '—'}</td>
+        <td><a class="btn btn-primary btn-sm" href="conversation.html?id=${f.id}" onclick="event.stopPropagation();">💬 Re-engage</a></td>
+      </tr>
+    `).join('');
+  }
+  renderFans();
+  document.getElementById('fanSearch').addEventListener('input', e=>{ searchTerm = e.target.value.toLowerCase(); renderFans(); });
+
+  function openFanPanel(id){
+    const f = D.fans.find(x=>x.id===id);
+    document.getElementById('fanPanelAvatar').textContent = f.init;
+    document.getElementById('fanPanelName').textContent = f.name;
+    document.getElementById('fanPanelTag').textContent = tagLabel(f.segment);
+    document.getElementById('fanPanelTag').className = 'tag ' + f.segment;
+    document.getElementById('fanPanelNotes').value = f.notes;
+    document.getElementById('fanPanelMessage').href = 'conversation.html?id=' + f.id;
+    document.getElementById('fanPanelProfile').href = 'fan-profile.html?id=' + f.id;
+    document.getElementById('fanPanelTimeline').innerHTML = `
+      <div class="timeline-item">Joined AsheFlow <span class="t">${f.joined}</span></div>
+      <div class="timeline-item">Total spend to date: ${f.spentLabel} <span class="t">Updated ${f.active}</span></div>
+      <div class="timeline-item">Went quiet <span class="t">${f.active}</span></div>
+      <div class="timeline-item">Engagement score: ${f.engagement}/100 <span class="t">Last calculated today</span></div>`;
+    document.getElementById('fanPanel').classList.add('open');
+    document.getElementById('slideBackdrop').classList.add('open');
+  }
+  function closeFanPanel(){
+    document.getElementById('fanPanel').classList.remove('open');
+    document.getElementById('slideBackdrop').classList.remove('open');
+  }
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

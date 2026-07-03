@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Saved Replies — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Saved Replies</h1><p>Your library of go-to canned replies, ready to drop into any chat.</p></div>
+        <button class="btn btn-primary" id="newReplyBtn">+ New Saved Reply</button>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="card" id="newReplyForm" style="margin-bottom:1.2rem;display:none;">
+        <div class="card-title">New Saved Reply</div>
+        <div class="field">
+          <label>Label</label>
+          <input type="text" id="newReplyLabel" placeholder="e.g. 🎁 Special offer" />
+        </div>
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Reply text</label>
+          <textarea rows="3" id="newReplyText" placeholder="Type the full reply text..."></textarea>
+        </div>
+        <div class="flex gap-1">
+          <button class="btn btn-primary btn-sm" id="saveNewReplyBtn">Save Reply</button>
+          <button class="btn btn-ghost btn-sm" id="cancelNewReplyBtn">Cancel</button>
+        </div>
+      </div>
+
+      <div id="repliesList"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'inbox', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('inbox', 'saved-replies.html');
+
+  const D = window.ASHEFLOW_DATA;
+
+  function replyCardHtml(r, idx){
+    return `<div class="result-card" data-idx="${idx}">
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:.4rem;">${r.label}</div>
+        <div>${r.text}</div>
+      </div>
+      <div class="flex gap-1" style="flex-shrink:0;">
+        <button class="btn btn-ghost btn-sm" onclick="AsheUtils.copyText(${JSON.stringify(r.text)}, this)">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="editReply(${idx})">✎ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReply(${idx})">🗑 Delete</button>
+      </div>
+    </div>`;
+  }
+
+  function renderReplies(){
+    const list = document.getElementById('repliesList');
+    if(!D.savedReplies.length){
+      list.innerHTML = `<div class="state-block"><div class="state-icon">💬</div><h3>No saved replies yet</h3><p>Create your first canned reply to speed up your inbox workflow.</p></div>`;
+      return;
+    }
+    list.innerHTML = D.savedReplies.map((r,idx)=>replyCardHtml(r, idx)).join('');
+  }
+
+  function editReply(idx){
+    AsheToast.show({type:'info', title:'Editing coming soon', body:'Full inline editing is on its way.'});
+  }
+
+  function deleteReply(idx){
+    const r = D.savedReplies[idx];
+    D.savedReplies.splice(idx, 1);
+    renderReplies();
+    AsheToast.show({type:'success', title:'Reply deleted', body:r ? r.label + ' was removed.' : ''});
+  }
+
+  renderReplies();
+
+  const newReplyBtn = document.getElementById('newReplyBtn');
+  const newReplyForm = document.getElementById('newReplyForm');
+  const cancelNewReplyBtn = document.getElementById('cancelNewReplyBtn');
+  const saveNewReplyBtn = document.getElementById('saveNewReplyBtn');
+
+  newReplyBtn.addEventListener('click', ()=>{
+    const willOpen = newReplyForm.style.display === 'none';
+    newReplyForm.style.display = willOpen ? 'block' : 'none';
+    if(willOpen) document.getElementById('newReplyLabel').focus();
+  });
+  cancelNewReplyBtn.addEventListener('click', ()=>{
+    newReplyForm.style.display = 'none';
+    document.getElementById('newReplyLabel').value = '';
+    document.getElementById('newReplyText').value = '';
+  });
+  saveNewReplyBtn.addEventListener('click', ()=>{
+    const label = document.getElementById('newReplyLabel').value.trim();
+    const text = document.getElementById('newReplyText').value.trim();
+    if(!label || !text){
+      AsheToast.show({type:'error', title:'Missing info', body:'Add a label and reply text before saving.'});
+      return;
+    }
+    D.savedReplies.unshift({label, text});
+    renderReplies();
+    document.getElementById('newReplyLabel').value = '';
+    document.getElementById('newReplyText').value = '';
+    newReplyForm.style.display = 'none';
+    AsheToast.show({type:'success', title:'Saved reply added', body:label});
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

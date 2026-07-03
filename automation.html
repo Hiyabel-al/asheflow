@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Automation — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Automation Hub</h1><p>Set it once, let AsheFlow run it forever.</p></div>
+        <a class="btn btn-primary" href="workflow-builder.html">+ New Automation</a>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="grid-4" style="margin-bottom:1.2rem;">
+        <div class="card"><div class="metric-label">Active Flows</div><div class="metric-value" id="statActive">0</div></div>
+        <div class="card"><div class="metric-label">Messages Sent</div><div class="metric-value" id="statSent">0</div></div>
+        <div class="card"><div class="metric-label">Avg Reply Rate</div><div class="metric-value" id="statReply">0%</div></div>
+        <div class="card"><div class="metric-label">Paused</div><div class="metric-value" id="statPaused">0</div></div>
+      </div>
+
+      <div id="automationList"></div>
+
+      <div class="card-title" style="margin-top:2rem;">Automation History</div>
+      <div class="card" style="padding:1rem 1.4rem;overflow-x:auto;">
+        <table style="min-width:640px;">
+          <thead><tr><th>Automation</th><th>Fan</th><th>Message</th><th>Sent</th><th>Status</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'automation' });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('automation', 'automation.html');
+
+  const D = window.ASHEFLOW_DATA;
+  document.getElementById('statActive').textContent = D.automations.filter(a=>a.active).length;
+  document.getElementById('statSent').textContent = D.automations.reduce((s,a)=>s+a.sent,0).toLocaleString();
+  document.getElementById('statReply').textContent = Math.round(D.automations.reduce((s,a)=>s+a.replyRate,0)/D.automations.length) + '%';
+  document.getElementById('statPaused').textContent = D.automations.filter(a=>!a.active).length;
+
+  function renderAutomations(){
+    document.getElementById('automationList').innerHTML = D.automations.map(a=>`
+      <div class="card flow-card">
+        <div class="flow-info">
+          <div class="flex items-center gap-1"><h3>${a.name}</h3><span class="mini-tag">${a.category}</span></div>
+          <p>${a.trigger}</p>
+          <div class="flow-stats"><span>Sent: <b>${a.sent.toLocaleString()}</b></span><span>Reply rate: <b>${a.replyRate}%</b></span></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a class="btn btn-ghost btn-sm" href="workflow-builder.html?id=${a.id}">Edit</a>
+          <label class="switch"><input type="checkbox" ${a.active?'checked':''} data-id="${a.id}" /><span class="slider-toggle"></span></label>
+        </div>
+      </div>
+    `).join('');
+    document.querySelectorAll('#automationList input[type="checkbox"]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        const a = D.automations.find(x=>x.id===cb.dataset.id);
+        a.active = cb.checked;
+        AsheToast.show({type: cb.checked ? 'success' : 'info', title: a.name + (cb.checked ? ' turned on' : ' paused')});
+      });
+    });
+  }
+  renderAutomations();
+
+  document.getElementById('historyBody').innerHTML = D.scheduledMessages.map(m=>`
+    <tr><td>${m.status==='sent' ? 'Follow-ups' : 'Scheduled Message'}</td><td>${m.fan}</td><td style="color:var(--text-faint);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.preview}</td><td>${m.when}</td><td><span class="tag ${m.status==='sent'?'live':'beta'}">${m.status}</span></td></tr>
+  `).join('');
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

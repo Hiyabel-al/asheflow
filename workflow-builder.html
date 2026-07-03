@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Workflow Builder — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+<style>
+  .flow-canvas{display:flex;flex-direction:column;align-items:center;gap:0;}
+  .flow-node{width:100%;max-width:460px;background:var(--bg-raised);backdrop-filter:blur(16px);border:0.5px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;position:relative;}
+  .flow-node .node-type{font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-faint);margin-bottom:.3rem;}
+  .flow-node.trigger{border-color:rgba(167,139,250,.4);background:var(--violet-soft);}
+  .flow-node.trigger .node-type{color:var(--violet);}
+  .flow-node.action .node-type{color:var(--cyan);}
+  .flow-node h4{font-size:.92rem;font-weight:700;margin-bottom:.2rem;}
+  .flow-node p{font-size:.8rem;color:var(--text-dim);}
+  .flow-node .remove-node{position:absolute;top:.7rem;right:.7rem;background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:.9rem;}
+  .flow-connector{width:2px;height:28px;background:var(--line);}
+  .add-node-row{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:1rem 0 2rem;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="breadcrumb" style="margin-bottom:.6rem;"><a href="automation.html">Automation</a> <span>/</span> <span class="current">Workflow Builder</span></div>
+      <div class="view-head">
+        <div class="field" style="margin-bottom:0;max-width:340px;"><input id="flowName" value="New Automation Flow" style="font-size:1.1rem;font-weight:800;font-family:'Sora',sans-serif;background:transparent;border:none;padding:.2rem 0;" /></div>
+        <div class="flex gap-1">
+          <button class="btn btn-ghost" onclick="AsheToast.show({type:'info', title:'Test run started'})">▶ Test Run</button>
+          <button class="btn btn-primary" onclick="saveFlow()">Save Flow</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Flow Canvas</div>
+          <div class="flow-canvas" id="flowCanvas"></div>
+          <div class="add-node-row">
+            <button class="btn btn-ghost btn-sm" onclick="addNode('action','Send Message','Send a DM to the fan')">+ Send Message</button>
+            <button class="btn btn-ghost btn-sm" onclick="addNode('action','Wait','Pause before the next step')">+ Wait</button>
+            <button class="btn btn-ghost btn-sm" onclick="addNode('action','Condition','Branch based on fan behavior')">+ Condition</button>
+            <button class="btn btn-ghost btn-sm" onclick="addNode('action','Send PPV','Offer exclusive paid content')">+ Send PPV</button>
+          </div>
+        </div>
+
+        <div class="flex-col gap-2">
+          <div class="card">
+            <div class="card-title">Trigger</div>
+            <div class="field" style="margin-bottom:.8rem;">
+              <label>When this happens</label>
+              <select id="triggerSelect">
+                <option>New fan subscribes</option>
+                <option>Fan sends a message</option>
+                <option>No reply after 24 hours</option>
+                <option>Fan inactive 14 days</option>
+                <option>Fan's birthday</option>
+                <option>New content published</option>
+              </select>
+            </div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="updateTrigger()">Update Trigger</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Template</div>
+            <p class="text-dim" style="font-size:.85rem;margin-bottom:1rem;">Start from a proven flow instead of building from scratch.</p>
+            <div class="flex-col gap-1">
+              <button class="btn btn-ghost btn-sm btn-block" onclick="loadTemplate('welcome')">👋 Welcome Sequence</button>
+              <button class="btn btn-ghost btn-sm btn-block" onclick="loadTemplate('followup')">📨 Follow-up</button>
+              <button class="btn btn-ghost btn-sm btn-block" onclick="loadTemplate('reengage')">🔄 Re-engagement</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'automation' });
+
+  const D = window.ASHEFLOW_DATA;
+  const params = new URLSearchParams(window.location.search);
+  const editId = params.get('id');
+  let nodes = [];
+
+  function renderCanvas(){
+    const canvas = document.getElementById('flowCanvas');
+    canvas.innerHTML = '';
+    const trigger = document.createElement('div');
+    trigger.className = 'flow-node trigger';
+    trigger.innerHTML = `<div class="node-type">Trigger</div><h4 id="triggerLabel">${document.getElementById('triggerSelect').value}</h4><p>Starts the automation</p>`;
+    canvas.appendChild(trigger);
+    nodes.forEach((n,i)=>{
+      const connector = document.createElement('div');
+      connector.className = 'flow-connector';
+      canvas.appendChild(connector);
+      const node = document.createElement('div');
+      node.className = 'flow-node action';
+      node.innerHTML = `<button class="remove-node" onclick="removeNode(${i})">&times;</button><div class="node-type">${n.type}</div><h4>${n.title}</h4><p>${n.desc}</p>`;
+      canvas.appendChild(node);
+    });
+  }
+  function addNode(type,title,desc){ nodes.push({type,title,desc}); renderCanvas(); }
+  function removeNode(i){ nodes.splice(i,1); renderCanvas(); }
+  function updateTrigger(){ renderCanvas(); AsheToast.show({type:'success', title:'Trigger updated'}); }
+
+  function loadTemplate(key){
+    const templates = {
+      welcome: [{type:'Action',title:'Send Intro Message',desc:'Warm welcome to new subscriber'},{type:'Wait',title:'Wait 1 Hour',desc:'Pause before the offer'},{type:'Action',title:'Send PPV',desc:'Offer a starter exclusive'}],
+      followup: [{type:'Wait',title:'Wait 24 Hours',desc:'Give the fan time to reply'},{type:'Action',title:'Send Check-in',desc:'Friendly follow-up message'}],
+      reengage: [{type:'Wait',title:'Wait 14 Days',desc:'Confirm fan has gone quiet'},{type:'Action',title:'Send Win-back Offer',desc:'Special discount to re-engage'}],
+    };
+    nodes = templates[key].map(n=>({type:n.type,title:n.title,desc:n.desc}));
+    renderCanvas();
+    AsheToast.show({type:'success', title:'Template loaded'});
+  }
+
+  function saveFlow(){
+    AsheToast.show({type:'success', title:'Flow saved', body:document.getElementById('flowName').value});
+    setTimeout(()=>{ window.location.href = 'automation.html'; }, 800);
+  }
+
+  if(editId){
+    const a = D.automations.find(x=>x.id===editId);
+    if(a){
+      document.getElementById('flowName').value = a.name;
+      document.getElementById('triggerSelect').value = a.trigger.split(' → ')[0];
+      nodes = a.trigger.split(' → ').slice(1).map(step=>({type:'Action', title:step, desc:''}));
+    }
+  }
+  renderCanvas();
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

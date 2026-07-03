@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Inbox — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>AI Inbox</h1><p>Every conversation, with an AI-drafted reply ready to go.</p></div>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="grid-2">
+        <div class="card" style="padding:.8rem;">
+          <div style="padding:.4rem .6rem .8rem;"><input class="search" style="width:100%;" placeholder="Search conversations..." id="convoSearch" /></div>
+          <div id="convoList"></div>
+        </div>
+        <div class="card chat-panel">
+          <div class="chat-header">
+            <div class="avatar avatar-sm" id="chatAvatar">MJ</div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:.9rem;" id="chatName">Mara J.</div><div style="font-size:.74rem;color:var(--text-faint);" id="chatMeta">Active 2m ago</div></div>
+            <a class="btn btn-ghost btn-sm" id="openFullConvo" href="conversation.html">Open full view →</a>
+          </div>
+          <div class="chat-body" id="chatBody"></div>
+          <div class="ai-suggest">
+            <div class="ai-suggest-label">✨ AI Reply Generator</div>
+            <div class="tone-row" data-chip-group id="toneRow"></div>
+            <div id="variantContainer" style="margin-top:.8rem;"></div>
+            <button class="btn btn-ghost btn-sm" onclick="regenerateVariants()" style="margin-top:.4rem;">↻ Generate Again</button>
+          </div>
+          <div class="saved-replies" id="savedRepliesQuick"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'inbox', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('inbox', 'ai-inbox.html');
+
+  const D = window.ASHEFLOW_DATA;
+  let currentConvoIndex = 0;
+  let activeTone = 'friendly';
+
+  function renderConvoList(filter){
+    const q = (filter||'').toLowerCase();
+    const list = D.conversations.filter(c=>!q || c.name.toLowerCase().includes(q));
+    document.getElementById('convoList').innerHTML = list.map((c)=>{
+      const i = D.conversations.indexOf(c);
+      return `<div class="inbox-list-row ${i===currentConvoIndex?'active':''}" onclick="openConvo(${i})">
+        <div class="avatar avatar-sm">${c.init}</div>
+        <div class="info"><div class="name-row">${c.name}${c.unread?'<span class="unread-dot"></span>':''}</div>
+        <div class="snippet">${c.messages[c.messages.length-1].text}</div></div>
+      </div>`;
+    }).join('') || `<div class="state-block"><p>No conversations match your search.</p></div>`;
+  }
+  document.getElementById('convoSearch').addEventListener('input', e=>renderConvoList(e.target.value));
+
+  function openConvo(i){
+    currentConvoIndex = i;
+    const c = D.conversations[i];
+    document.querySelectorAll('#convoList .inbox-list-row').forEach((r,idx)=>r.classList.toggle('active', idx===i));
+    document.getElementById('chatAvatar').textContent = c.init;
+    document.getElementById('chatName').textContent = c.name;
+    document.getElementById('chatMeta').textContent = 'Active ' + c.lastActive;
+    document.getElementById('openFullConvo').href = 'conversation.html?id=' + c.id;
+    document.getElementById('chatBody').innerHTML = c.messages.map(m=>`<div class="bubble ${m.from==='fan'?'fan':'me'}">${m.text}</div>`).join('');
+    renderVariants(c);
+  }
+
+  function renderToneRow(){
+    document.getElementById('toneRow').innerHTML = D.toneMeta.map(t=>`<span class="tone-chip${t.key===activeTone?' active':''}" data-tone="${t.key}">${t.label}</span>`).join('');
+    document.querySelectorAll('#toneRow .tone-chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        document.querySelectorAll('#toneRow .tone-chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        activeTone = chip.dataset.tone;
+      });
+    });
+  }
+
+  function renderVariants(c){
+    const container = document.getElementById('variantContainer');
+    container.innerHTML = D.toneMeta.map(t=>`<div class="variant-card generating"><div class="variant-label" style="color:${t.color};">${t.label}</div><div class="variant-text">Generating...</div></div>`).join('');
+    D.toneMeta.forEach((t,idx)=>{
+      setTimeout(()=>{
+        const card = container.children[idx];
+        const text = t.key === 'custom'
+          ? (c.variants.custom || "Type a tone above and I'll write this one to match.")
+          : c.variants[t.key];
+        card.classList.remove('generating');
+        card.innerHTML = `<div class="variant-label" style="color:${t.color};">${t.label}</div><div class="variant-text">${text}</div>
+          <div style="display:flex;gap:1rem;">
+            <button class="copy-btn" onclick="AsheUtils.copyText(${JSON.stringify(text)}, this)">📋 Copy</button>
+            <button class="copy-btn" onclick="AsheToast.show({type:'success', title:'Reply saved'})">⭐ Save</button>
+          </div>`;
+      }, 180 * (idx+1));
+    });
+  }
+  function regenerateVariants(){ renderVariants(D.conversations[currentConvoIndex]); AsheToast.show({type:'info', title:'Regenerating replies...'}); }
+
+  function renderSavedQuick(){
+    document.getElementById('savedRepliesQuick').innerHTML = D.savedReplies.slice(0,3).map(s=>`<span class="tone-chip" onclick="AsheUtils.copyText(${JSON.stringify(s.text)}, this)">${s.label}</span>`).join('') + `<a class="tone-chip" href="saved-replies.html">View all →</a>`;
+  }
+
+  renderToneRow();
+  renderConvoList();
+  renderSavedQuick();
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedId = params.get('id');
+  const startIndex = requestedId ? Math.max(0, D.conversations.findIndex(c=>c.id===requestedId)) : 0;
+  openConvo(startIndex);
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

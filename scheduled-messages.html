@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scheduled Messages — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Scheduled Messages</h1><p>Queue up messages and drops ahead of time.</p></div>
+        <button class="btn btn-primary" id="newScheduleBtn">+ Schedule New Message</button>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="card" id="newScheduleForm" style="margin-bottom:1.2rem;display:none;">
+        <div class="card-title">Schedule New Message</div>
+        <div class="field">
+          <label>Recipient</label>
+          <input type="text" id="newScheduleRecipient" placeholder="e.g. Mara J. or All VIP Fans" />
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea rows="3" id="newScheduleText" placeholder="Type the message to send..."></textarea>
+        </div>
+        <div class="field" style="margin-bottom:1rem;">
+          <label>Send at</label>
+          <input type="datetime-local" id="newScheduleWhen" />
+        </div>
+        <div class="flex gap-1">
+          <button class="btn btn-primary btn-sm" id="saveNewScheduleBtn">Schedule Message</button>
+          <button class="btn btn-ghost btn-sm" id="cancelNewScheduleBtn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:1rem 1.4rem;overflow-x:auto;">
+        <table style="min-width:720px;">
+          <thead><tr><th>Fan</th><th>Message</th><th>When</th><th>Status</th></tr></thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+        <div id="scheduleEmptyState"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'automation', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('automation', 'scheduled-messages.html');
+
+  const D = window.ASHEFLOW_DATA;
+
+  function initials(name){
+    return name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2) || '?';
+  }
+
+  function rowHtml(m){
+    return `<tr>
+      <td style="display:flex;align-items:center;gap:.6rem;white-space:nowrap;"><div class="avatar avatar-sm">${m.init}</div>${m.fan}</td>
+      <td style="color:var(--text-faint);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.preview}</td>
+      <td>${m.when}</td>
+      <td><span class="tag ${m.status==='sent'?'live':'beta'}">${m.status}</span></td>
+    </tr>`;
+  }
+
+  function renderSchedule(){
+    const body = document.getElementById('scheduleBody');
+    const empty = document.getElementById('scheduleEmptyState');
+    if(!D.scheduledMessages.length){
+      body.innerHTML = '';
+      empty.innerHTML = `<div class="state-block"><div class="state-icon">📅</div><h3>Nothing scheduled</h3><p>Queue up your first message to a fan or segment.</p></div>`;
+      return;
+    }
+    empty.innerHTML = '';
+    body.innerHTML = D.scheduledMessages.map(m=>rowHtml(m)).join('');
+  }
+  renderSchedule();
+
+  const newScheduleBtn = document.getElementById('newScheduleBtn');
+  const newScheduleForm = document.getElementById('newScheduleForm');
+  const cancelNewScheduleBtn = document.getElementById('cancelNewScheduleBtn');
+  const saveNewScheduleBtn = document.getElementById('saveNewScheduleBtn');
+
+  newScheduleBtn.addEventListener('click', ()=>{
+    const willOpen = newScheduleForm.style.display === 'none';
+    newScheduleForm.style.display = willOpen ? 'block' : 'none';
+    if(willOpen) document.getElementById('newScheduleRecipient').focus();
+  });
+  function resetScheduleForm(){
+    newScheduleForm.style.display = 'none';
+    document.getElementById('newScheduleRecipient').value = '';
+    document.getElementById('newScheduleText').value = '';
+    document.getElementById('newScheduleWhen').value = '';
+  }
+  cancelNewScheduleBtn.addEventListener('click', resetScheduleForm);
+
+  function formatWhen(dtValue){
+    if(!dtValue) return 'Unscheduled';
+    const d = new Date(dtValue);
+    if(isNaN(d.getTime())) return dtValue;
+    const dateLabel = d.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+    const timeLabel = d.toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
+    return `${dateLabel}, ${timeLabel}`;
+  }
+
+  saveNewScheduleBtn.addEventListener('click', ()=>{
+    const recipient = document.getElementById('newScheduleRecipient').value.trim();
+    const text = document.getElementById('newScheduleText').value.trim();
+    const when = document.getElementById('newScheduleWhen').value;
+    if(!recipient || !text){
+      AsheToast.show({type:'error', title:'Missing info', body:'Add a recipient and message before scheduling.'});
+      return;
+    }
+    D.scheduledMessages.unshift({
+      fan: recipient,
+      init: initials(recipient),
+      preview: text,
+      when: formatWhen(when),
+      status: 'scheduled'
+    });
+    renderSchedule();
+    resetScheduleForm();
+    AsheToast.show({type:'success', title:'Message scheduled', body:recipient});
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

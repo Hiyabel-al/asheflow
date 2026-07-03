@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Content Calendar — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+<style>
+  /* Scoped to this page only — 7-column weekly calendar grid, not defined in app-shell.css */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.8rem;align-items:start;}
+  .cal-day{min-height:180px;}
+  .cal-day-head{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-faint);margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center;}
+  .cal-item{background:rgba(255,255,255,.03);border:0.5px solid var(--line);border-radius:10px;padding:.7rem .8rem;margin-bottom:.6rem;font-size:.8rem;color:var(--text-dim);}
+  .cal-item .cal-time{font-size:.68rem;color:var(--text-faint);margin-bottom:.3rem;display:block;}
+  .cal-item .cal-title{color:var(--text);font-weight:600;font-size:.82rem;display:block;margin-bottom:.5rem;line-height:1.35;}
+  .cal-add{width:100%;background:transparent;border:1px dashed var(--line);border-radius:10px;padding:.7rem .5rem;color:var(--text-faint);font-size:.76rem;cursor:pointer;transition:all .15s;}
+  .cal-add:hover{border-color:rgba(167,139,250,.4);color:var(--violet);background:var(--violet-soft);}
+
+  @media (max-width:900px){
+    .cal-grid{grid-template-columns:1fr;}
+    .cal-day{min-height:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Content Studio</h1><p>Generate captions, hooks, and find trends in seconds.</p></div>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="card-title">This Week</div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'studio', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('studio', 'content-calendar.html');
+
+  const D = window.ASHEFLOW_DATA;
+
+  const TYPE_META = {
+    photo:   { icon:'📷', tagClass:'vip' },
+    video:   { icon:'🎬', tagClass:'high' },
+    ppv:     { icon:'💌', tagClass:'danger' },
+    message: { icon:'💬', tagClass:'regular' },
+  };
+
+  function renderCalendar(){
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = D.contentCalendar.map((day, dayIdx)=>{
+      const itemsHtml = day.items.length
+        ? day.items.map(item=>{
+            const meta = TYPE_META[item.type] || { icon:'📌', tagClass:'regular' };
+            return `
+              <div class="cal-item">
+                <span class="cal-time">${item.time}</span>
+                <span class="cal-title">${item.title}</span>
+                <span class="mini-tag tag ${meta.tagClass}">${meta.icon} ${item.type}</span>
+              </div>`;
+          }).join('')
+        : '';
+      return `
+        <div class="card cal-day">
+          <div class="cal-day-head"><span>${day.date}</span></div>
+          ${itemsHtml}
+          <button class="cal-add" data-day="${dayIdx}">+ Add post</button>
+        </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.cal-add').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        AsheToast.show({type:'info', title:'Post scheduling coming soon'});
+      });
+    });
+  }
+
+  renderCalendar();
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

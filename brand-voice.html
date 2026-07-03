@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brand Voice — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Brand Voice Training</div>
+            <div class="form-row"><label>Default reply tone</label>
+              <select id="brandTone">
+                <option value="friendly">Friendly</option>
+                <option value="professional">Professional</option>
+                <option value="premium">Premium</option>
+                <option value="playful">Playful</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div class="form-row" style="max-width:560px;">
+              <label>Example messages (used to train your tone)</label>
+              <textarea id="brandExamples" rows="6" style="resize:vertical;">Hey! Thank you so much for subscribing 🥰 I post new content a few times a week, and I love hearing from my fans — don't be shy!
+Aw I missed you too! What have you been up to lately?
+Thank you so much, this really means the world to me 💜</textarea>
+              <div class="field-hint">Paste a few real replies you've sent — AsheFlow learns your phrasing, punctuation, and emoji habits from these.</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">Tone Preview</div>
+            <div class="chat-header" style="border-bottom:none;padding-bottom:0;margin-bottom:.8rem;">
+              <div class="avatar avatar-sm">MJ</div>
+              <div><p style="font-size:.85rem;font-weight:700;">Mara J.</p><span style="font-size:.76rem;color:var(--text-faint);">VIP fan</span></div>
+            </div>
+            <div class="bubble fan" style="margin-bottom:.9rem;">Hey! Been a while 👀 I miss you ❤️</div>
+            <div class="ai-suggest">
+              <div class="ai-suggest-label">AI Reply Preview</div>
+              <div class="variant-text" id="tonePreviewText" style="margin-bottom:0;">Click "Preview Tone" to generate a sample reply in your selected tone.</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="previewToneBtn" style="margin-top:1rem;">Preview Tone</button>
+          </div>
+
+          <button class="btn btn-primary btn-sm" id="saveBrandVoiceBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('brand-voice.html');
+
+  const TONE_PREVIEWS = {
+    friendly: "Aw I missed you too! What have you been up to lately? 💜",
+    professional: "Thanks so much for the message — I've been heads-down creating, but I always love hearing from you.",
+    premium: "I've been thinking about you too 💭 I've got something special waiting for you if you want to see it.",
+    playful: "Aw I missed you too 🥺 what have you been up to today?",
+    custom: "Type a few example messages above and I'll write this one to match your custom tone."
+  };
+
+  document.getElementById('previewToneBtn').addEventListener('click', ()=>{
+    const tone = document.getElementById('brandTone').value;
+    document.getElementById('tonePreviewText').textContent = TONE_PREVIEWS[tone] || TONE_PREVIEWS.friendly;
+  });
+
+  document.getElementById('saveBrandVoiceBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'success', title:'Brand voice saved' });
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

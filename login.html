@@ -1,27 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AsheFlow Login</title>
-<link rel="stylesheet" href="login.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Log In — AsheFlow</title>
+<meta name="description" content="Log in to your AsheFlow creator command center." />
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/auth.css" />
 </head>
-<body>
+<body class="auth-body">
 
-<div class="login-box">
-  <div class="logo">ASHEFLOW</div>
-  <p>Creator Command Center</p>
+<div class="glow-field"><div class="glow g1"></div><div class="glow g2"></div></div>
 
-  <input type="email" placeholder="Creator email" id="email">
-  <input type="password" placeholder="Password" id="password">
-
-  <button onclick="login()">Enter Dashboard</button>
-
-  <div class="small">
-    New creator? Request access
+<div class="auth-side">
+  <a href="index.html" class="logo"><img src="assets/img/logo-mark.png" alt="AsheFlow" />ASHE<span>FLOW</span></a>
+  <h1>Your creator business, running itself.</h1>
+  <p class="lede">Log back in to your AI inbox, fan CRM, and automations — everything picks up right where you left off.</p>
+  <div class="auth-quote">
+    <p>"I got my inbox down from 4 hours a day to 20 minutes. The AI actually sounds like me."</p>
+    <div class="who">
+      <div class="avatar avatar-sm">MJ</div>
+      <div><b>Mara J.</b><span>OnlyFans Creator</span></div>
+    </div>
+  </div>
+  <div class="auth-stats">
+    <div><b>2.1M+</b><span>Messages Sent</span></div>
+    <div><b>64K+</b><span>Fans Managed</span></div>
+    <div><b>$18M+</b><span>Creator Revenue</span></div>
   </div>
 </div>
 
-<script src="login.js"></script>
+<div class="auth-form-wrap">
+  <div class="auth-card">
+    <a href="index.html" class="auth-card-mobile-logo"><img src="assets/img/logo-mark.png" alt="" />ASHE<span>FLOW</span></a>
+    <div class="auth-eyebrow">Welcome back</div>
+    <h2>Log in to AsheFlow</h2>
+    <p class="sub">New here? <a href="signup.html" class="auth-link">Create a free account</a></p>
+
+    <div class="social-row">
+      <button type="button" class="btn-social"><span class="ic">🔍</span> Continue with Google</button>
+      <button type="button" class="btn-social"><span class="ic">🍎</span> Continue with Apple</button>
+    </div>
+    <div class="divider">or log in with email</div>
+
+    <form id="loginForm" novalidate>
+      <div class="field" id="fieldEmail">
+        <label for="loginEmail">Email address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="loginEmail" placeholder="you@email.com" autocomplete="email" required />
+        </div>
+        <div class="field-error">Enter a valid email address.</div>
+      </div>
+      <div class="field" id="fieldPassword">
+        <label for="loginPassword">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required />
+          <button type="button" class="input-action" data-toggle-password="loginPassword">Show</button>
+        </div>
+        <div class="field-error">Enter your password.</div>
+      </div>
+      <div class="auth-row-between">
+        <label class="checkbox-row"><input type="checkbox" id="rememberMe" checked /> Remember me</label>
+        <a href="forgot-password.html" class="auth-link">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginSubmit">
+        <span class="btn-label">Log In →</span>
+      </button>
+    </form>
+
+    <p class="auth-footer-note">By logging in you agree to our <a href="terms.html" class="auth-link">Terms</a> and <a href="privacy.html" class="auth-link">Privacy Policy</a>.</p>
+  </div>
+</div>
+
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = document.getElementById('loginEmail');
+    const password = document.getElementById('loginPassword');
+    let valid = true;
+    if(!AsheAuth.validEmail(email.value)){ AsheAuth.setFieldError(document.getElementById('fieldEmail'), 'Enter a valid email address.'); valid = false; }
+    else AsheAuth.setFieldError(document.getElementById('fieldEmail'), '');
+    if(!password.value){ AsheAuth.setFieldError(document.getElementById('fieldPassword'), 'Enter your password.'); valid = false; }
+    else AsheAuth.setFieldError(document.getElementById('fieldPassword'), '');
+    if(!valid) return;
+
+    const btn = document.getElementById('loginSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Logging in...';
+    setTimeout(()=>{
+      AsheToast.show({type:'success', title:'Welcome back!'});
+      setTimeout(()=>{ window.location.href = 'dashboard.html'; }, 500);
+    }, 700);
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="auth"></script>
 </body>
 </html>

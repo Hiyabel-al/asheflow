@@ -1,66 +1,136 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AsheFlow Creator Command Center</title>
-<link rel="stylesheet" href="dashboard.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Overview — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
 </head>
 <body>
 
-<div class="sidebar">
-  <h1>ASHEFLOW</h1>
-  <p>Creator Command Center</p>
-  <button>AI Inbox</button>
-  <button>Fan Intelligence</button>
-  <button>Automations</button>
-  <button>Bookings</button>
-  <button>AI Assistant</button>
+<div class="app">
+  <div id="sidebarRoot"></div>
+
+  <div class="main">
+    <div id="topbarRoot"></div>
+
+    <div class="view active">
+      <div class="command-center">
+        <div class="cc-greeting">
+          <div>
+            <div class="cc-hello" id="ccGreeting">Good evening 👋</div>
+            <div class="cc-sub">Today's Mission</div>
+          </div>
+        </div>
+        <div class="cc-stats">
+          <a class="cc-stat" href="vip-fans.html"><span class="cc-ic">🔥</span><div><div class="cc-val" data-count="7">0</div><div class="cc-lbl">VIP Fans Need Replies</div></div></a>
+          <a class="cc-stat" href="ai-inbox.html"><span class="cc-ic">💬</span><div><div class="cc-val" data-count="39">0</div><div class="cc-lbl">Unread Messages</div></div></a>
+          <a class="cc-stat" href="content-calendar.html"><span class="cc-ic">📅</span><div><div class="cc-val" data-count="2">0</div><div class="cc-lbl">Posts Scheduled</div></div></a>
+          <a class="cc-stat" href="analytics.html"><span class="cc-ic">💰</span><div><div class="cc-val" data-count="430" data-prefix="$">$0</div><div class="cc-lbl">Revenue Today</div></div></a>
+        </div>
+        <div class="cc-recommend">
+          <div class="cc-rec-label">✨ AI Suggestion</div>
+          <div class="cc-rec-text">"Reconnect with Sarah — she hasn't heard from you in 2 weeks."</div>
+          <a class="btn btn-primary btn-sm" href="conversation.html?id=sarah">Generate Reply →</a>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Revenue trend <a class="link" href="analytics.html">View Analytics →</a></div>
+          <div class="chart-bars">
+            <div style="height:35%"></div><div style="height:55%"></div><div style="height:40%"></div><div style="height:70%"></div>
+            <div style="height:50%"></div><div style="height:85%"></div><div style="height:65%"></div><div style="height:95%"></div>
+            <div style="height:60%"></div><div style="height:78%"></div><div style="height:90%"></div><div style="height:100%"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Today's Tasks <span class="link" id="taskProgress">0/4</span></div>
+          <div id="taskList"></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="card">
+          <div class="card-title">Latest messages <a class="link" href="ai-inbox.html">Open Inbox →</a></div>
+          <div id="latestMessages"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent activity <a class="link" href="analytics.html">View All →</a></div>
+          <div id="recentActivity"></div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <a class="btn btn-primary" href="workflow-builder.html">+ Create Automation</a>
+        <a class="btn btn-ghost" href="caption-generator.html">✏️ Generate Caption</a>
+        <a class="btn btn-ghost" href="fans.html">👤 Add Fan Note</a>
+        <a class="btn btn-ghost" href="scheduled-messages.html">🗓️ Schedule a Message</a>
+      </div>
+    </div>
+  </div>
 </div>
 
-<main>
-  <section class="hero">
-    <h2>Creator Growth Operating System</h2>
-    <p>Manage conversations, fans and creator workflows with AI.</p>
-  </section>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'overview' });
 
-  <div class="cards">
-    <div class="card"><h3>💰 Revenue</h3><span>$8,420</span></div>
-    <div class="card"><h3>👥 Active Fans</h3><span>12,540</span></div>
-    <div class="card"><h3>💬 Messages</h3><span>342</span></div>
-  </div>
+  const D = window.ASHEFLOW_DATA;
 
-  <section class="panel">
-    <h2>AI Inbox — DM Sales Assistant</h2>
-    <textarea id="message" placeholder="Paste fan message here..."></textarea>
-    <button onclick="generateReply()">Generate AI Reply</button>
-    <div id="reply"></div>
-  </section>
+  // Greeting + onboarding handoff
+  const params = new URLSearchParams(window.location.search);
+  let handoffName = params.get('name');
+  try{ const stored = JSON.parse(localStorage.getItem('asheflow_profile')||'null'); if(!handoffName && stored) handoffName = stored.name; }catch(e){}
+  document.getElementById('ccGreeting').textContent = AsheUtils.timeGreeting() + (handoffName ? `, ${handoffName}` : '') + ' 👋';
 
-  <section class="grid">
-    <div class="panel">
-      <h2>Fan Intelligence</h2>
-      <p>🔥 VIP Fans</p>
-      <p>💎 High Value Fans</p>
-      <p>❄ Inactive Fans</p>
-    </div>
+  // Today's tasks
+  const tasks = [
+    {label:'Reply to 3 VIP fans', done:false},
+    {label:'Review AI-generated captions', done:true},
+    {label:'Approve scheduled post for Friday', done:false},
+    {label:'Check in on inactive fans', done:false},
+  ];
+  function renderTasks(){
+    document.getElementById('taskList').innerHTML = tasks.map((t,i)=>`
+      <label class="checkbox-row" style="padding:.5rem 0;border-bottom:0.5px solid var(--line);" data-i="${i}">
+        <input type="checkbox" ${t.done?'checked':''} />
+        <span style="${t.done?'text-decoration:line-through;color:var(--text-faint);':''}">${t.label}</span>
+      </label>`).join('');
+    const done = tasks.filter(t=>t.done).length;
+    document.getElementById('taskProgress').textContent = `${done}/${tasks.length}`;
+    document.querySelectorAll('#taskList input').forEach(cb=>{
+      cb.addEventListener('change', (e)=>{
+        const i = e.target.closest('[data-i]').dataset.i;
+        tasks[i].done = e.target.checked;
+        renderTasks();
+      });
+    });
+  }
+  renderTasks();
 
-    <div class="panel">
-      <h2>Automation Hub</h2>
-      <p>Welcome flows</p>
-      <p>Follow-ups</p>
-      <p>Re-engagement</p>
-    </div>
-  </section>
+  // Latest messages (from shared conversation data)
+  document.getElementById('latestMessages').innerHTML = D.conversations.slice(0,3).map(c=>`
+    <a class="inbox-list-row" href="conversation.html?id=${c.id}">
+      <div class="avatar avatar-sm">${c.init}</div>
+      <div class="info"><div class="name-row">${c.name}${c.unread?'<span class="unread-dot"></span>':''}</div>
+      <div class="snippet">${c.messages[c.messages.length-1].text}</div></div>
+    </a>`).join('');
 
-  <section class="panel">
-    <h2>Bookings + AI Website Assistant</h2>
-    <p>Manage requests, scheduling and chatbot leads.</p>
-  </section>
+  // Recent activity feed (reuse notifications data)
+  document.getElementById('recentActivity').innerHTML = D.notifications.map(n=>`
+    <div class="dropdown-item" style="padding:.7rem 0;border-bottom:0.5px solid var(--line);">
+      <span class="ic">${n.ic}</span><div class="body"><p>${n.text}</p><div class="t">${n.t}</div></div>
+    </div>`).join('');
 
-</main>
-
-<script src="dashboard.js"></script>
+  AsheUtils.animateCounters(document.querySelector('.command-center'));
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
 </body>
 </html>

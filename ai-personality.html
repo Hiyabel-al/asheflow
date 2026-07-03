@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Personality — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">AI Behavior</div>
+            <div class="toggle-row">
+              <div><p>Auto-send replies</p><span>Let AsheFlow send AI replies without your review</span></div>
+              <label class="switch"><input type="checkbox" id="autoSendToggle" /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><p>Approve before sending</p><span>Review every AI-generated reply before it goes out</span></div>
+              <label class="switch"><input type="checkbox" id="approveToggle" checked /><span class="slider-toggle"></span></label>
+            </div>
+            <div class="toggle-row"><div><p>Use emojis in replies</p><span>How often the AI adds emojis to generated messages</span></div>
+              <select style="width:auto;" id="emojiLevel"><option>Low</option><option selected>Medium</option><option>High</option></select>
+            </div>
+            <div class="toggle-row" style="border-bottom:none;"><div><p>Response speed</p><span>Simulate human-like reply timing</span></div>
+              <select style="width:auto;" id="responseSpeed"><option value="instant">Instant</option><option value="5min" selected>5 min delay</option><option value="30min">30 min delay</option></select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Boundaries</div>
+            <div class="form-row" style="max-width:560px;">
+              <label>Topics the AI should never discuss</label>
+              <textarea id="boundariesText" rows="4" style="resize:vertical;" placeholder="e.g. Never discuss meeting in person"></textarea>
+            </div>
+            <div class="tone-row" style="margin-top:0;">
+              <span class="tone-chip" data-no-select data-boundary="Never discuss meeting in person">+ Never discuss meeting in person</span>
+              <span class="tone-chip" data-no-select data-boundary="Never share personal address">+ Never share personal address</span>
+              <span class="tone-chip" data-no-select data-boundary="Never promise refunds">+ Never promise refunds</span>
+              <span class="tone-chip" data-no-select data-boundary="Never discuss other platforms">+ Never discuss other platforms</span>
+            </div>
+            <button class="btn btn-primary btn-sm" id="saveAiPersonalityBtn" style="margin-top:1.4rem;">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('ai-personality.html');
+
+  const autoSend = document.getElementById('autoSendToggle');
+  const approve = document.getElementById('approveToggle');
+  autoSend.addEventListener('change', ()=>{
+    if(autoSend.checked) approve.checked = false;
+  });
+  approve.addEventListener('change', ()=>{
+    if(approve.checked) autoSend.checked = false;
+  });
+
+  document.querySelectorAll('[data-boundary]').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const textarea = document.getElementById('boundariesText');
+      const line = chip.getAttribute('data-boundary');
+      const existing = textarea.value.split('\n').map(s=>s.trim()).filter(Boolean);
+      if(existing.includes(line)) return;
+      existing.push(line);
+      textarea.value = existing.join('\n');
+    });
+  });
+
+  document.getElementById('saveAiPersonalityBtn').addEventListener('click', ()=>{
+    AsheToast.show({ type:'success', title:'AI personality settings saved' });
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

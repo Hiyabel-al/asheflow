@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Set Up Your Workspace — AsheFlow</title>
+<meta name="description" content="Set up your AsheFlow workspace in under a minute." />
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/onboarding.css" />
+</head>
+<body>
+
+<div class="glow-field"><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<header class="onb-header">
+  <a href="index.html" class="logo"><img src="assets/img/logo-mark.png" alt="AsheFlow" />ASHE<span>FLOW</span></a>
+  <a href="index.html" class="exit-link">Save &amp; exit</a>
+</header>
+
+<div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+<div class="step-count" id="stepCount"></div>
+
+<main class="onb-main">
+
+  <!-- Welcome -->
+  <div class="step active" data-step="welcome">
+    <div class="step-eyebrow">Welcome</div>
+    <h1>Let's set up your workspace</h1>
+    <p class="step-desc">A guided setup so AsheFlow is tailored to your business from the first login. Takes about a minute.</p>
+    <button class="btn btn-primary btn-block btn-lg" onclick="goNext()">Get Started →</button>
+  </div>
+
+  <!-- 1. Creator Name -->
+  <div class="step" data-step="name">
+    <div class="step-eyebrow">Step 1 of 7</div>
+    <h1>What should we call you?</h1>
+    <p class="step-desc">This is how your workspace and AI will refer to you.</p>
+    <div class="field"><label for="nameInput">Creator or workspace name</label><input type="text" id="nameInput" placeholder="e.g. Mara" /></div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="submitName()">Continue →</button>
+  </div>
+
+  <!-- 2. Platform -->
+  <div class="step" data-step="platform">
+    <div class="step-eyebrow">Step 2 of 7</div>
+    <h1>Where do you post?</h1>
+    <p class="step-desc">We'll tailor integrations to your platform.</p>
+    <div class="option-grid" data-field="platform">
+      <button class="option-card" data-value="OnlyFans">OnlyFans <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Fansly">Fansly <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Multiple Platforms">Multiple Platforms <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Other">Other <span class="arrow">→</span></button>
+    </div>
+    <button class="back-link" onclick="goBack()">← Back</button>
+  </div>
+
+  <!-- 3. Monthly Revenue -->
+  <div class="step" data-step="revenue">
+    <div class="step-eyebrow">Step 3 of 7</div>
+    <h1>What's your monthly revenue right now?</h1>
+    <p class="step-desc">This stays private and just helps us recommend a plan.</p>
+    <div class="option-grid" data-field="revenue">
+      <button class="option-card" data-value="Just starting out">Just starting out <span class="arrow">→</span></button>
+      <button class="option-card" data-value="$1k–5k/mo">$1k – 5k/mo <span class="arrow">→</span></button>
+      <button class="option-card" data-value="$5k–20k/mo">$5k – 20k/mo <span class="arrow">→</span></button>
+      <button class="option-card" data-value="$20k+/mo">$20k+/mo <span class="arrow">→</span></button>
+    </div>
+    <button class="back-link" onclick="goBack()">← Back</button>
+  </div>
+
+  <!-- 4. Team Size -->
+  <div class="step" data-step="team">
+    <div class="step-eyebrow">Step 4 of 7</div>
+    <h1>How big is your team?</h1>
+    <p class="step-desc">Solo creator or running with support — either way, we'll set up the right seats.</p>
+    <div class="option-grid" data-field="team">
+      <button class="option-card" data-value="Just me">Just me <span class="arrow">→</span></button>
+      <button class="option-card" data-value="2–5 people">2–5 people <span class="arrow">→</span></button>
+      <button class="option-card" data-value="6–20 people">6–20 people <span class="arrow">→</span></button>
+      <button class="option-card" data-value="20+ people">20+ people <span class="arrow">→</span></button>
+    </div>
+    <button class="back-link" onclick="goBack()">← Back</button>
+  </div>
+
+  <!-- 5. Goals (multi-select) -->
+  <div class="step" data-step="goals">
+    <div class="step-eyebrow">Step 5 of 7</div>
+    <h1>What are you hoping to get out of AsheFlow?</h1>
+    <p class="step-desc">Pick as many as apply.</p>
+    <div class="option-grid" data-field="goals" data-multi="true">
+      <button class="option-card" data-value="Save time on DMs"><span>Save time on DMs</span><span class="check">✓</span></button>
+      <button class="option-card" data-value="Grow revenue"><span>Grow revenue</span><span class="check">✓</span></button>
+      <button class="option-card" data-value="Grow my audience"><span>Grow my audience</span><span class="check">✓</span></button>
+      <button class="option-card" data-value="Improve content quality"><span>Improve content quality</span><span class="check">✓</span></button>
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="submitGoals()">Continue →</button>
+    <button class="back-link" onclick="goBack()">← Back</button>
+  </div>
+
+  <!-- 6. AI Personality -->
+  <div class="step" data-step="personality">
+    <div class="step-eyebrow">Step 6 of 7</div>
+    <h1>How should your AI sound?</h1>
+    <p class="step-desc">You can fine-tune this anytime in Settings.</p>
+    <div class="option-grid" data-field="personality">
+      <button class="option-card" data-value="Friendly">Friendly <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Professional">Professional <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Premium">Premium <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Playful">Playful <span class="arrow">→</span></button>
+      <button class="option-card" data-value="Custom">Custom <span class="arrow">→</span></button>
+    </div>
+    <div class="field" id="customPersonalityField" style="display:none;">
+      <label for="customPersonalityInput">Describe the tone you want</label>
+      <input type="text" id="customPersonalityInput" placeholder="e.g. witty and a little sarcastic" />
+    </div>
+    <button class="back-link" onclick="goBack()">← Back</button>
+  </div>
+
+  <!-- 7. Finish -->
+  <div class="step" data-step="finish">
+    <div class="step-eyebrow">Step 7 of 7</div>
+    <h1>Almost there</h1>
+    <p class="step-desc">Where should we send your login link?</p>
+    <div class="field">
+      <label for="emailInput">Email address</label>
+      <input type="email" id="emailInput" placeholder="you@email.com" />
+      <div class="field-error" id="emailError">Enter a valid email to continue.</div>
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="submitFinish()">Create My Workspace →</button>
+    <button class="back-link" onclick="goBack()">← Back</button>
+  </div>
+
+  <!-- Success -->
+  <div class="step" data-step="success">
+    <div class="onb-success-icon">🎉</div>
+    <h1>Your workspace is ready</h1>
+    <p class="step-desc" id="successDesc">Everything's set up and tailored to your business.</p>
+    <div class="plan-callout"><div class="plan-eyebrow">Recommended Plan</div><div class="plan-name" id="planName">Pro</div></div>
+    <div class="recap-card" id="recapCard"></div>
+    <a href="dashboard.html" id="dashboardLink" class="btn btn-primary btn-block btn-lg" style="margin-bottom:.8rem;">Enter Dashboard →</a>
+    <a href="index.html" class="btn btn-ghost btn-block">Back to Home</a>
+  </div>
+
+</main>
+
+<script>
+  const steps = ['welcome','name','platform','revenue','team','goals','personality','finish','success'];
+  const progressSteps = ['name','platform','revenue','team','goals','personality','finish'];
+  let current = 0;
+  const params0 = new URLSearchParams(window.location.search);
+  const answers = { name: params0.get('name') || '', platform:null, revenue:null, team:null, goals:[], personality:null, customPersonality:'', email:'' };
+
+  function render(){
+    steps.forEach((name,i)=>{ document.querySelector(`.step[data-step="${name}"]`).classList.toggle('active', i===current); });
+    const stepName = steps[current];
+    const progIdx = progressSteps.indexOf(stepName);
+    const track = document.getElementById('progressTrack');
+    const count = document.getElementById('stepCount');
+    if(progIdx === -1){ track.style.visibility = 'hidden'; count.textContent = ''; }
+    else { track.style.visibility = 'visible'; document.getElementById('progressFill').style.width = (((progIdx+1)/progressSteps.length)*100)+'%'; count.textContent = `Step ${progIdx+1} of ${progressSteps.length}`; }
+  }
+  function goNext(){ if(current < steps.length-1){ current++; render(); } if(steps[current]==='success'){ renderSuccess(); } }
+  function goBack(){ if(current > 0){ current--; render(); } }
+
+  function submitName(){
+    const val = document.getElementById('nameInput').value.trim();
+    answers.name = val || 'there';
+    goNext();
+  }
+
+  document.querySelectorAll('.option-grid').forEach(group=>{
+    const field = group.getAttribute('data-field');
+    const multi = group.getAttribute('data-multi') === 'true';
+    group.querySelectorAll('.option-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const val = card.getAttribute('data-value');
+        if(multi){
+          card.classList.toggle('selected');
+          answers.goals = [...group.querySelectorAll('.option-card.selected')].map(c=>c.getAttribute('data-value'));
+        } else {
+          group.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+          card.classList.add('selected');
+          answers[field] = val;
+          if(field === 'personality'){
+            document.getElementById('customPersonalityField').style.display = val === 'Custom' ? 'block' : 'none';
+            if(val !== 'Custom'){ setTimeout(goNext, 250); return; }
+          } else {
+            setTimeout(goNext, 250);
+          }
+        }
+      });
+    });
+  });
+
+  function submitGoals(){ goNext(); }
+
+  function submitFinish(){
+    const input = document.getElementById('emailInput');
+    const error = document.getElementById('emailError');
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+    if(!valid){ error.style.display='block'; input.focus(); return; }
+    error.style.display='none';
+    answers.email = input.value.trim();
+    if(answers.personality === 'Custom'){ answers.customPersonality = document.getElementById('customPersonalityInput').value.trim(); }
+    goNext();
+  }
+
+  function recommendPlan(){
+    if(answers.team === '20+ people' || answers.team === '6–20 people' || answers.revenue === '$20k+/mo') return 'Agency';
+    if(answers.team === '2–5 people' || answers.revenue === '$5k–20k/mo' || answers.revenue === '$1k–5k/mo') return 'Pro';
+    return 'Starter';
+  }
+
+  function renderSuccess(){
+    const plan = recommendPlan();
+    document.getElementById('planName').textContent = plan;
+    document.getElementById('successDesc').textContent = `Hey ${answers.name} — everything's set up and tailored to your business.`;
+    const personalityLabel = answers.personality === 'Custom' && answers.customPersonality ? `Custom (${answers.customPersonality})` : (answers.personality||'—');
+    document.getElementById('recapCard').innerHTML = `
+      <div class="recap-row"><span>Name</span><span>${answers.name||'—'}</span></div>
+      <div class="recap-row"><span>Platform</span><span>${answers.platform||'—'}</span></div>
+      <div class="recap-row"><span>Monthly revenue</span><span>${answers.revenue||'—'}</span></div>
+      <div class="recap-row"><span>Team size</span><span>${answers.team||'—'}</span></div>
+      <div class="recap-row"><span>Goals</span><span>${answers.goals.join(', ')||'—'}</span></div>
+      <div class="recap-row"><span>AI personality</span><span>${personalityLabel}</span></div>
+    `;
+    try{
+      const existing = JSON.parse(localStorage.getItem('asheflow_profile') || '{}');
+      localStorage.setItem('asheflow_profile', JSON.stringify({...existing, name: answers.name, plan, personality: answers.personality, platform: answers.platform}));
+    }catch(e){}
+    const dashParams = new URLSearchParams({ name: answers.name||'', personality: answers.personality||'' });
+    document.getElementById('dashboardLink').href = 'dashboard.html?' + dashParams.toString();
+  }
+
+  // Skip straight to name step if we arrived with a name already (from signup)
+  if(answers.name){ current = 1; }
+  render();
+</script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/copilot.js" data-context="onboarding"></script>
+
+</body>
+</html>

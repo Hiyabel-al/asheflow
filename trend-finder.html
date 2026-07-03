@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trend Finder — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Content Studio</h1><p>Generate captions, hooks, and find trends in seconds.</p></div>
+        <button class="btn btn-ghost" onclick="refreshTrends()">🔄 Refresh Trends</button>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="filter-chips" data-chip-group id="trendFilters">
+        <span class="filter-chip active" data-filter="all">All</span>
+        <span class="filter-chip" data-filter="caption">Captions</span>
+        <span class="filter-chip" data-filter="video">Video Style</span>
+        <span class="filter-chip" data-filter="timing">Timing</span>
+      </div>
+
+      <div id="trendList" class="flex-col gap-2"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'studio', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('studio', 'trend-finder.html');
+
+  const D = window.ASHEFLOW_DATA;
+
+  // classify each trend string by keyword so filter chips have something real to match against
+  const KEYWORDS = {
+    caption: ['caption', 'intro', 'responding', 'behind-the-scenes'],
+    video:   ['clip', 'reel', 'vertical', 'video', 'teaser', 'style'],
+    timing:  ['week', 'today', 'right now', 'this week'],
+  };
+  function classify(text){
+    const lower = text.toLowerCase();
+    for(const key in KEYWORDS){
+      if(KEYWORDS[key].some(kw=>lower.includes(kw))) return key;
+    }
+    return 'caption';
+  }
+
+  let currentTrends = D.studioExamples.trend.map(t=>({ text:t, cat:classify(t) }));
+  let currentFilter = 'all';
+
+  function renderTrends(){
+    const box = document.getElementById('trendList');
+    const items = currentTrends.filter(t=>currentFilter==='all' || t.cat===currentFilter);
+    if(!items.length){
+      box.innerHTML = `<div class="card state-block">No trends match this filter yet.</div>`;
+      return;
+    }
+    box.innerHTML = items.map(t=>`
+      <div class="card">
+        <div class="flex items-center gap-1" style="margin-bottom:.6rem;">
+          <span class="tag high">🔥 Trending</span>
+        </div>
+        <p style="font-size:.92rem;color:var(--text);margin-bottom:1rem;line-height:1.5;">${t.text}</p>
+        <button class="btn btn-ghost btn-sm" onclick="useTrend(${JSON.stringify(t.text)})">✅ Use This Idea</button>
+      </div>
+    `).join('');
+  }
+
+  function useTrend(text){
+    navigator.clipboard.writeText(text).then(()=>{
+      AsheToast.show({type:'success', title:'Idea copied', body:'Paste it into your next caption or hook.'});
+    });
+  }
+
+  function refreshTrends(){
+    const box = document.getElementById('trendList');
+    box.innerHTML = `<div class="card"><div class="skel skel-line"></div><div class="skel skel-line w70"></div></div>
+      <div class="card"><div class="skel skel-line"></div><div class="skel skel-line short"></div></div>
+      <div class="card"><div class="skel skel-line"></div><div class="skel skel-line w70"></div></div>`;
+    setTimeout(()=>{
+      // shuffle
+      for(let i=currentTrends.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [currentTrends[i], currentTrends[j]] = [currentTrends[j], currentTrends[i]];
+      }
+      renderTrends();
+      AsheToast.show({type:'info', title:'Trends refreshed'});
+    }, 600);
+  }
+
+  document.querySelectorAll('#trendFilters .filter-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      currentFilter = chip.dataset.filter;
+      renderTrends();
+    });
+  });
+
+  renderTrends();
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fan Profile — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="breadcrumb" style="margin-bottom:1rem;"><a href="fans.html">Fan CRM</a> <span>/</span> <span class="current" id="crumbName">Fan Profile</span></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="flex items-center gap-2" style="margin-bottom:1.2rem;">
+            <div class="avatar avatar-xl" id="pAvatar">MJ</div>
+            <div>
+              <h1 style="font-size:1.4rem;margin-bottom:.2rem;" id="pName">Mara J.</h1>
+              <div class="text-faint" style="font-size:.85rem;" id="pUsername">@marajanes</div>
+              <div class="flex gap-1" style="margin-top:.5rem;"><span class="tag" id="pSegment">VIP</span><span class="mini-tag" id="pPlatform">OnlyFans</span></div>
+            </div>
+          </div>
+          <div class="flex gap-1" style="margin-bottom:1.4rem;">
+            <a class="btn btn-primary btn-sm" id="pMessageBtn" href="conversation.html">💬 Message</a>
+            <button class="btn btn-ghost btn-sm" onclick="AsheToast.show({type:'success', title:'Tag added'})">+ Add Tag</button>
+          </div>
+          <div class="form-row" style="max-width:none;">
+            <label>Notes</label>
+            <textarea rows="4" id="pNotes" placeholder="Add a note about this fan..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="AsheToast.show({type:'success', title:'Notes saved'})">Save Notes</button>
+        </div>
+
+        <div class="flex-col gap-2">
+          <div class="grid-2-even">
+            <div class="card"><div class="metric-label">Total Spend</div><div class="metric-value" id="pSpend">$0</div></div>
+            <div class="card"><div class="metric-label">Engagement Score</div><div class="metric-value" id="pEngagement">0</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Spend over time</div>
+            <div class="chart-bars cyan" id="pChart"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2-even" style="margin-top:1rem;">
+        <div class="card">
+          <div class="card-title">Timeline</div>
+          <div id="pTimeline"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Fan Details</div>
+          <div class="toggle-row"><div><p>Platform</p></div><span id="dPlatform">—</span></div>
+          <div class="toggle-row"><div><p>Joined</p></div><span id="dJoined">—</span></div>
+          <div class="toggle-row"><div><p>Last active</p></div><span id="dActive">—</span></div>
+          <div class="toggle-row" style="border-bottom:none;"><div><p>Tags</p></div><span id="dTags">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'crm' });
+
+  const D = window.ASHEFLOW_DATA;
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id') || 'mara';
+  const f = D.fans.find(x=>x.id===id) || D.fans[0];
+  function tagLabel(t){ return t==='vip'?'VIP':t==='high'?'High Spender':t==='inactive'?'Inactive':'Regular'; }
+
+  document.title = f.name + ' — AsheFlow';
+  document.getElementById('crumbName').textContent = f.name;
+  document.getElementById('pAvatar').textContent = f.init;
+  document.getElementById('pName').textContent = f.name;
+  document.getElementById('pUsername').textContent = f.username;
+  document.getElementById('pSegment').textContent = tagLabel(f.segment);
+  document.getElementById('pSegment').className = 'tag ' + f.segment;
+  document.getElementById('pPlatform').textContent = f.platform;
+  document.getElementById('pMessageBtn').href = 'conversation.html?id=' + f.id;
+  document.getElementById('pNotes').value = f.notes;
+  document.getElementById('pSpend').textContent = f.spentLabel;
+  document.getElementById('pEngagement').textContent = f.engagement + '/100';
+  document.getElementById('dPlatform').textContent = f.platform;
+  document.getElementById('dJoined').textContent = f.joined;
+  document.getElementById('dActive').textContent = f.active;
+  document.getElementById('dTags').textContent = f.tags.join(', ');
+
+  document.getElementById('pTimeline').innerHTML = `
+    <div class="timeline-item">Sent a tip <span class="t">${f.active}</span></div>
+    <div class="timeline-item">Subscribed <span class="t">${f.joined}</span></div>
+    <div class="timeline-item">Purchased PPV content <span class="t">2 weeks ago</span></div>
+    <div class="timeline-item">Left a comment on latest post <span class="t">3 weeks ago</span></div>
+  `;
+
+  const bars = [40,55,35,60,f.engagement,80,65,90,70,85,75,95];
+  document.getElementById('pChart').innerHTML = bars.map(h=>`<div style="height:${h}%"></div>`).join('');
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Conversation — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div>
+          <div class="breadcrumb" style="margin-bottom:.5rem;"><a href="ai-inbox.html">AI Inbox</a> <span>/</span> <span class="current" id="crumbName">Conversation</span></div>
+          <h1 id="pageTitle">Conversation</h1>
+        </div>
+        <div class="flex gap-1">
+          <span class="tag" id="fanSegmentTag">VIP</span>
+          <a class="btn btn-ghost btn-sm" href="fan-profile.html" id="viewProfileLink">View Fan Profile →</a>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card chat-panel" style="height:640px;">
+          <div class="chat-header">
+            <div class="avatar avatar-md" id="chatAvatar">MJ</div>
+            <div><div style="font-weight:700;font-size:.95rem;" id="chatName">Mara J.</div><div style="font-size:.76rem;color:var(--text-faint);" id="chatMeta">Active 2m ago</div></div>
+          </div>
+          <div class="chat-body" id="chatBody"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✨ AI Reply Generator</div>
+          <div class="tone-row" data-chip-group id="toneRow" style="margin-top:0;"></div>
+          <div id="variantContainer" style="margin-top:1rem;"></div>
+          <div class="flex gap-1" style="margin-top:.6rem;">
+            <button class="btn btn-ghost btn-sm" onclick="regenerateVariants()">↻ Generate Again</button>
+          </div>
+
+          <div class="card-title" style="margin-top:1.6rem;">Reply History</div>
+          <div id="replyHistory"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'inbox' });
+
+  const D = window.ASHEFLOW_DATA;
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id') || 'mara';
+  const convo = D.conversations.find(c=>c.id===id) || D.conversations[0];
+  let activeTone = 'friendly';
+
+  document.title = convo.name + ' — AsheFlow';
+  document.getElementById('crumbName').textContent = convo.name;
+  document.getElementById('pageTitle').textContent = convo.name;
+  document.getElementById('chatAvatar').textContent = convo.init;
+  document.getElementById('chatName').textContent = convo.name;
+  document.getElementById('chatMeta').textContent = 'Active ' + convo.lastActive;
+  document.getElementById('fanSegmentTag').textContent = convo.segment === 'vip' ? 'VIP' : convo.segment === 'high' ? 'High Spender' : 'Regular';
+  document.getElementById('fanSegmentTag').className = 'tag ' + convo.segment;
+  document.getElementById('viewProfileLink').href = 'fan-profile.html?id=' + convo.id;
+  document.getElementById('chatBody').innerHTML = convo.messages.map(m=>`<div class="bubble ${m.from==='fan'?'fan':'me'}">${m.text}</div>`).join('');
+
+  function renderToneRow(){
+    document.getElementById('toneRow').innerHTML = D.toneMeta.map(t=>`<span class="tone-chip${t.key===activeTone?' active':''}" data-tone="${t.key}">${t.label}</span>`).join('');
+    document.querySelectorAll('#toneRow .tone-chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        document.querySelectorAll('#toneRow .tone-chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        activeTone = chip.dataset.tone;
+      });
+    });
+  }
+
+  const history = [];
+  function renderHistory(){
+    const box = document.getElementById('replyHistory');
+    if(!history.length){ box.innerHTML = `<p class="text-faint" style="font-size:.82rem;">Replies you save will show up here.</p>`; return; }
+    box.innerHTML = history.map(h=>`<div class="result-card"><span>${h}</span></div>`).join('');
+  }
+  renderHistory();
+
+  function renderVariants(c){
+    const container = document.getElementById('variantContainer');
+    container.innerHTML = D.toneMeta.map(t=>`<div class="variant-card generating"><div class="variant-label" style="color:${t.color};">${t.label}</div><div class="variant-text">Generating...</div></div>`).join('');
+    D.toneMeta.forEach((t,idx)=>{
+      setTimeout(()=>{
+        const card = container.children[idx];
+        const text = t.key === 'custom' ? (c.variants.custom || "Type a tone above and I'll write this one to match.") : c.variants[t.key];
+        card.classList.remove('generating');
+        card.innerHTML = `<div class="variant-label" style="color:${t.color};">${t.label}</div><div class="variant-text">${text}</div>
+          <div style="display:flex;gap:1rem;">
+            <button class="copy-btn" onclick="AsheUtils.copyText(${JSON.stringify(text)}, this)">📋 Copy</button>
+            <button class="copy-btn" onclick="saveReply(${JSON.stringify(text)})">⭐ Save</button>
+          </div>`;
+      }, 180 * (idx+1));
+    });
+  }
+  function saveReply(text){ history.unshift(text); renderHistory(); AsheToast.show({type:'success', title:'Reply saved to history'}); }
+  function regenerateVariants(){ renderVariants(convo); AsheToast.show({type:'info', title:'Regenerating replies...'}); }
+
+  renderToneRow();
+  renderVariants(convo);
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

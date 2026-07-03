@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Coming Soon — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/marketing.css" />
+</head>
+<body>
+
+<div class="glow-field"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<div class="status-page">
+  <a href="index.html" class="logo" style="position:absolute;top:2rem;left:2rem;font-family:'Sora',sans-serif;font-weight:800;letter-spacing:2px;text-decoration:none;display:flex;align-items:center;gap:.5rem;font-size:1.05rem;"><img src="assets/img/logo-mark.png" alt="" style="width:26px;height:26px;border-radius:7px;" />ASHE<span style="color:var(--violet);">FLOW</span></a>
+  <div class="hero-badge reveal">🚧 Under construction</div>
+  <h1 class="reveal" style="font-size:2.4rem;">Something new is on the way</h1>
+  <p class="reveal">We're building this page out right now. In the meantime, jump into your dashboard or explore what's already live.</p>
+
+  <div class="countdown-row reveal" id="countdownRow">
+    <div class="countdown-cell"><b id="cdDays">--</b><span>Days</span></div>
+    <div class="countdown-cell"><b id="cdHours">--</b><span>Hours</span></div>
+    <div class="countdown-cell"><b id="cdMins">--</b><span>Mins</span></div>
+    <div class="countdown-cell"><b id="cdSecs">--</b><span>Secs</span></div>
+  </div>
+
+  <div class="hero-buttons reveal">
+    <a href="index.html" class="btn btn-primary btn-lg">Back to Home →</a>
+    <a href="dashboard.html" class="btn btn-ghost btn-lg">Go to Dashboard</a>
+  </div>
+
+  <form class="newsletter-input reveal" style="margin-top:2.4rem;max-width:360px;" id="notifyForm">
+    <input type="email" placeholder="you@email.com" required aria-label="Email address" />
+    <button type="submit" class="btn btn-primary">Notify Me</button>
+  </form>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script>
+  const target = new Date(Date.now() + 12*24*60*60*1000);
+  function tick(){
+    const diff = Math.max(0, target - new Date());
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor(diff % 86400000 / 3600000);
+    const m = Math.floor(diff % 3600000 / 60000);
+    const s = Math.floor(diff % 60000 / 1000);
+    document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
+    document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
+    document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+
+  document.getElementById('notifyForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    AsheToast.show({type:'success', title:"We'll let you know", body:'Watch your inbox for updates.'});
+    e.target.reset();
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="marketing"></script>
+</body>
+</html>

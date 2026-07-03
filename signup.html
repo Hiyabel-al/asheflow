@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create Your Account — AsheFlow</title>
+<meta name="description" content="Start your free AsheFlow trial — no credit card required." />
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/auth.css" />
+</head>
+<body class="auth-body">
+
+<div class="glow-field"><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<div class="auth-side">
+  <a href="index.html" class="logo"><img src="assets/img/logo-mark.png" alt="AsheFlow" />ASHE<span>FLOW</span></a>
+  <h1>Start free. Upgrade whenever you're ready.</h1>
+  <p class="lede">Join thousands of creators using AsheFlow to run their AI inbox, fan CRM, and content — all in one place.</p>
+  <div class="auth-quote">
+    <p>"The Fan CRM alone paid for itself. I finally know who my VIPs are without digging through DMs."</p>
+    <div class="who">
+      <div class="avatar avatar-sm">DR</div>
+      <div><b>Devon R.</b><span>Fansly Creator</span></div>
+    </div>
+  </div>
+  <div class="auth-stats">
+    <div><b>14 days</b><span>Free Trial</span></div>
+    <div><b>$0</b><span>To Start</span></div>
+    <div><b>&lt;10 min</b><span>Setup Time</span></div>
+  </div>
+</div>
+
+<div class="auth-form-wrap">
+  <div class="auth-card">
+    <a href="index.html" class="auth-card-mobile-logo"><img src="assets/img/logo-mark.png" alt="" />ASHE<span>FLOW</span></a>
+    <div class="auth-eyebrow">Get started</div>
+    <h2>Create your account</h2>
+    <p class="sub">Already have one? <a href="login.html" class="auth-link">Log in</a></p>
+
+    <div class="social-row">
+      <button type="button" class="btn-social"><span class="ic">🔍</span> Continue with Google</button>
+      <button type="button" class="btn-social"><span class="ic">🍎</span> Continue with Apple</button>
+    </div>
+    <div class="divider">or sign up with email</div>
+
+    <form id="signupForm" novalidate>
+      <div class="field" id="fieldName">
+        <label for="signupName">Creator name</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="signupName" placeholder="e.g. Mara" autocomplete="name" required />
+        </div>
+        <div class="field-error">Tell us what to call you.</div>
+      </div>
+      <div class="field" id="fieldEmail">
+        <label for="signupEmail">Email address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="signupEmail" placeholder="you@email.com" autocomplete="email" required />
+        </div>
+        <div class="field-error">Enter a valid email address.</div>
+      </div>
+      <div class="field" id="fieldPassword">
+        <label for="signupPassword">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="signupPassword" placeholder="Create a password" autocomplete="new-password" required />
+          <button type="button" class="input-action" data-toggle-password="signupPassword">Show</button>
+        </div>
+        <div class="password-strength" id="passwordStrength"><div></div><div></div><div></div><div></div></div>
+        <div class="password-strength-label" id="passwordStrengthLabel"></div>
+        <div class="field-error">Use at least 8 characters.</div>
+      </div>
+      <div class="field" style="margin-bottom:1.6rem;">
+        <label class="checkbox-row"><input type="checkbox" id="agreeTerms" required /> I agree to the <a href="terms.html" class="auth-link">Terms</a> and <a href="privacy.html" class="auth-link">Privacy Policy</a></label>
+        <div class="field-error" id="termsError">You must agree to continue.</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="signupSubmit">
+        <span class="btn-label">Create Account →</span>
+      </button>
+    </form>
+
+    <p class="auth-footer-note">No credit card required · 14-day free trial</p>
+  </div>
+</div>
+
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+  document.getElementById('signupForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('signupName');
+    const email = document.getElementById('signupEmail');
+    const password = document.getElementById('signupPassword');
+    const terms = document.getElementById('agreeTerms');
+    let valid = true;
+
+    if(!name.value.trim()){ AsheAuth.setFieldError(document.getElementById('fieldName'), 'Tell us what to call you.'); valid = false; }
+    else AsheAuth.setFieldError(document.getElementById('fieldName'), '');
+
+    if(!AsheAuth.validEmail(email.value)){ AsheAuth.setFieldError(document.getElementById('fieldEmail'), 'Enter a valid email address.'); valid = false; }
+    else AsheAuth.setFieldError(document.getElementById('fieldEmail'), '');
+
+    if(password.value.length < 8){ AsheAuth.setFieldError(document.getElementById('fieldPassword'), 'Use at least 8 characters.'); valid = false; }
+    else AsheAuth.setFieldError(document.getElementById('fieldPassword'), '');
+
+    const termsError = document.getElementById('termsError');
+    if(!terms.checked){ termsError.classList.add('show'); valid = false; } else { termsError.classList.remove('show'); }
+
+    if(!valid) return;
+
+    try{ localStorage.setItem('asheflow_profile', JSON.stringify({name: name.value.trim(), email: email.value.trim()})); }catch(err){}
+
+    const btn = document.getElementById('signupSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creating account...';
+    setTimeout(()=>{
+      window.location.href = 'verify-email.html?email=' + encodeURIComponent(email.value.trim()) + '&name=' + encodeURIComponent(name.value.trim());
+    }, 700);
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="auth"></script>
+</body>
+</html>

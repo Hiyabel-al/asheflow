@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Integrations — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+<link rel="stylesheet" href="assets/css/marketing.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head"><div><h1>Settings</h1><p>Manage your workspace, account, and preferences.</p></div></div>
+
+      <div class="settings-layout">
+        <div class="settings-nav" id="settingsNavRoot"></div>
+        <div>
+          <div class="card">
+            <div class="card-title">Integrations</div>
+            <p class="text-faint" style="font-size:.85rem;margin-bottom:1.4rem;">Connect the tools you already use — AsheFlow plugs straight into your workflow.</p>
+            <div class="integrations-grid" id="integrationsGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'settings', search:false });
+  document.getElementById('settingsNavRoot').innerHTML = AsheShell.settingsNavHtml('integrations.html');
+
+  const CONNECTED_BY_DEFAULT = ['OpenAI', 'Claude', 'Stripe'];
+
+  function actionHtml(item){
+    if(item.status === 'live'){
+      return `<button class="btn btn-ghost btn-sm w-full" disabled>Connected ✓</button>`;
+    }
+    if(item.status === 'beta'){
+      return `<button class="btn btn-secondary btn-sm w-full" data-beta-btn>Join Beta</button>`;
+    }
+    return `<button class="btn btn-ghost btn-sm w-full" data-notify-btn>Notify Me</button>`;
+  }
+
+  function cardHtml(item){
+    const connected = CONNECTED_BY_DEFAULT.includes(item.name);
+    return `
+      <div class="integration-card" style="text-align:left;" data-integration="${item.name}">
+        <span class="status-badge ${item.status}">${item.status === 'live' ? 'Live' : item.status === 'beta' ? 'Beta' : 'Coming Soon'}</span>
+        <div class="fg-icon" style="margin-bottom:.8rem;">${item.icon}</div>
+        <div class="name" style="margin-top:0;font-size:.95rem;">${item.name}</div>
+        <p style="font-size:.78rem;color:var(--text-faint);margin:.4rem 0 1rem;line-height:1.5;">${item.desc}</p>
+        <div data-action-slot>${actionHtml(item)}</div>
+      </div>
+    `;
+  }
+
+  const grid = document.getElementById('integrationsGrid');
+  grid.innerHTML = ASHEFLOW_DATA.integrations.map(cardHtml).join('');
+
+  grid.addEventListener('click', (e)=>{
+    const betaBtn = e.target.closest('[data-beta-btn]');
+    const notifyBtn = e.target.closest('[data-notify-btn]');
+    if(betaBtn){
+      const card = betaBtn.closest('.integration-card');
+      const name = card.getAttribute('data-integration');
+      card.querySelector('[data-action-slot]').innerHTML = `<button class="btn btn-ghost btn-sm w-full" disabled>Connected ✓</button>`;
+      AsheToast.show({ type:'success', title: name + ' connected', body:'You\'re in the beta.' });
+    } else if(notifyBtn){
+      AsheToast.show({ type:'info', title:'We\'ll notify you when this ships' });
+    }
+  });
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>

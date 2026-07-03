@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Repurposer — AsheFlow</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/app-shell.css" />
+</head>
+<body>
+
+<div class="app">
+  <div id="sidebarRoot"></div>
+  <div class="main">
+    <div id="topbarRoot"></div>
+    <div class="view active">
+      <div class="view-head">
+        <div><h1>Content Studio</h1><p>Generate captions, hooks, and find trends in seconds.</p></div>
+      </div>
+      <div id="subnavRoot"></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">♻️ Repurposer</div>
+          <p class="text-dim" style="font-size:.85rem;margin-bottom:1rem;">Paste an existing post and turn it into fresh content across formats.</p>
+          <textarea class="studio-input" id="studioInput" placeholder="Paste or describe your existing post/caption — e.g. 'my top-performing beach photo set from last week'"></textarea>
+
+          <p class="text-faint" style="font-size:.76rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem;">Target format</p>
+          <div class="studio-tools" data-chip-group id="formatChips">
+            <span class="studio-tool active" data-format="Reel">🎞️ Reel</span>
+            <span class="studio-tool" data-format="Story">⭕ Story</span>
+            <span class="studio-tool" data-format="Carousel">🖼️ Carousel</span>
+            <span class="studio-tool" data-format="Tweet-style caption">✏️ Tweet-style caption</span>
+          </div>
+
+          <button class="btn btn-primary" onclick="generateContent()" style="margin-top:1rem;">✨ Repurpose It</button>
+          <div id="studioResults" style="margin-top:1.3rem;"></div>
+        </div>
+
+        <div class="flex-col gap-2">
+          <div class="card">
+            <div class="card-title">Recent Generations</div>
+            <div id="studioHistory"><p class="text-faint" style="font-size:.82rem;">Your repurposed ideas will show up here.</p></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Idea Generator</div>
+            <p class="text-dim" style="font-size:.85rem;margin-bottom:1rem;">Not sure what to repurpose? Get a fresh suggestion.</p>
+            <button class="btn btn-ghost btn-block" onclick="randomIdea()">🎲 Give Me An Idea</button>
+            <div id="ideaResult" style="margin-top:1rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/toast.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+  AsheShell.mount({ active:'studio', search:false });
+  document.getElementById('subnavRoot').outerHTML = AsheShell.subnavHtml('studio', 'repurposer.html');
+
+  const D = window.ASHEFLOW_DATA;
+  const history = [];
+
+  function renderHistory(){
+    const box = document.getElementById('studioHistory');
+    if(!history.length){ box.innerHTML = `<p class="text-faint" style="font-size:.82rem;">Your repurposed ideas will show up here.</p>`; return; }
+    box.innerHTML = history.slice(0,6).map(h=>`<div class="result-card"><span>${h}</span><button class="copy-btn" onclick="AsheUtils.copyText(${JSON.stringify(h)}, this)">Copy</button></div>`).join('');
+  }
+
+  function generateContent(){
+    const input = document.getElementById('studioInput').value.trim();
+    if(!input){ AsheToast.show({type:'warning', title:'Paste or describe your existing post first'}); return; }
+    const activeChip = document.querySelector('#formatChips .studio-tool.active');
+    const format = activeChip ? activeChip.dataset.format : 'Reel';
+    const resultsBox = document.getElementById('studioResults');
+    resultsBox.innerHTML = `<div class="skel skel-line"></div><div class="skel skel-line w70"></div><div class="skel skel-line short"></div>`;
+    setTimeout(()=>{
+      const results = D.studioExamples.repurpose;
+      resultsBox.innerHTML = `<p class="text-faint" style="font-size:.76rem;margin-bottom:.6rem;">Repurposed for: <b style="color:var(--cyan);">${format}</b></p>` + results.map(r=>`
+        <div class="result-card"><span>${r}</span>
+          <div class="flex gap-1">
+            <button class="copy-btn" onclick="AsheUtils.copyText(${JSON.stringify(r)}, this)">Copy</button>
+            <button class="copy-btn" onclick="saveToHistory(${JSON.stringify(r)})">⭐ Save</button>
+          </div>
+        </div>`).join('');
+    }, 650);
+  }
+  function saveToHistory(text){ history.unshift(text); renderHistory(); AsheToast.show({type:'success', title:'Saved to history'}); }
+
+  function randomIdea(){
+    const ideas = ["Turn your most-liked caption into a carousel of quotes.", "Stitch three short clips from last month into a highlight reel.", "Repurpose a fan Q&A thread into a Story series.", "Turn a PPV description into a teaser Tweet-style caption."];
+    document.getElementById('ideaResult').innerHTML = `<div class="result-card"><span>${ideas[Math.floor(Math.random()*ideas.length)]}</span></div>`;
+  }
+</script>
+<script src="assets/js/copilot.js" data-context="dashboard"></script>
+</body>
+</html>
